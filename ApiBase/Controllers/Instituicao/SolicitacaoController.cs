@@ -1,9 +1,7 @@
-﻿using ApiBase.Data;
+﻿using ApiBase.Contracts.Instituicao;
 using ApiBase.Models;
-using Dapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
 using System.Net;
 
 namespace ApiBase.Controllers.Instituicao
@@ -11,54 +9,28 @@ namespace ApiBase.Controllers.Instituicao
     [Authorize(Policy = "InstituicaoOnly")]
     [Route("api/v1/solicitacao")]
     [ApiController]
-    public class SolicitacaoController(IConfiguration config) : ControllerBase
+    public class SolicitacaoController(ISoliciticacoesRepository repository) : ControllerBase
     {
-        private readonly DataContextDapper _dapper = new(config);
+        private readonly ISoliciticacoesRepository _repository = repository;
 
         // Retorna as solicitações
         [HttpGet]
         public async Task<IEnumerable<SolicitaCurso>> Get()
         {
-            int id = int.Parse(User.Claims.First(x => x.Type == "userId").Value);
-
-            return await _dapper.LoadDataAsync<SolicitaCurso>(@"EXEC spInstituicao_SolicitacaoGet @InstituicaoId='" + id + "'");
+            return await _repository.Get(int.Parse(User.Claims.First(x => x.Type == "userId").Value));
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<SolicitaCurso>> Get(int id)
         {
-            string sql = @"EXEC spInstituicao_SolicitacaoGet 
-                @InstituicaoId=@UserIdParameter,
-                @SolicitacaoId=@SolicitacaoIdParameter";
-
-            DynamicParameters sqlParameters = new();
-
-            sqlParameters.Add("@UserIdParameter", int.Parse(User.Claims.First(x => x.Type == "userId").Value), DbType.Int32);
-            sqlParameters.Add("@SolicitacaoIdParameter", id, DbType.Int32);
-
-            return await _dapper.LoadDataSingleWithParametersAsync<SolicitaCurso>(sql, sqlParameters);
+            return await _repository.GetSolicitacao(id, int.Parse(User.Claims.First(x => x.Type == "userId").Value));
         }
 
         // Para atualizar informações de uma solicitação de um usuário
         [HttpPut]
         public async Task<IActionResult> Put(SolicitaCurso solicitaCurso)
         {
-            string sql = @"EXEC spInstituicao_Solicitacao_Update
-                @InstituicaoId=@UserIdParameter,
-                @SolicitacaoId = @SolicitacaoIdParameter,                
-                @Situacao = @SituacaoParameter,                 
-                @Explicacao = @ExplicacaoParameter, 
-                @IsActive = @IsActiveParameter";
-
-            DynamicParameters sqlParameters = new();
-
-            sqlParameters.Add("@UserIdParameter", int.Parse(User.Claims.First(x => x.Type == "userId").Value), DbType.Int32);
-            sqlParameters.Add("@SolicitacaoIdParameter", solicitaCurso.Id, DbType.Int32);
-            sqlParameters.Add("@SituacaoParameter", solicitaCurso.Situacao, DbType.String);
-            sqlParameters.Add("@ExplicacaoParameter", solicitaCurso.Explicacao, DbType.String);
-            sqlParameters.Add("@IsActiveParameter", solicitaCurso.IsActive, DbType.Boolean);
-
-            if (await _dapper.ExecuteSqlWithParametersAsync(sql, sqlParameters))
+            if (await _repository.Put(solicitaCurso, int.Parse(User.Claims.First(x => x.Type == "userId").Value)))
             {
                 return NoContent();
             }

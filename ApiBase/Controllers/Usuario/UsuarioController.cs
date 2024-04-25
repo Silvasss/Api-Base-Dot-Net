@@ -1,11 +1,8 @@
-﻿using ApiBase.Data;
+﻿using ApiBase.Contracts.Usuario;
 using ApiBase.Dtos;
-using ApiBase.Helpers;
 using ApiBase.Models;
-using Dapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
 using System.Net;
 
 namespace ApiBase.Controllers.Usuario
@@ -13,43 +10,23 @@ namespace ApiBase.Controllers.Usuario
     [Authorize(Policy = "UsuarioOnly")]
     [Route("api/v1/user")]
     [ApiController]
-    public class UsuarioController(IConfiguration config) : ControllerBase
+    public class UsuarioController(IUsuarioRepository repository) : ControllerBase
     {
-        private readonly DataContextDapper _dapper = new(config);
-        private readonly AuthHelper _authHelper = new(config);
+        private readonly IUsuarioRepository _repository = repository;
 
         // Retorna todos os dados criado pelo usuário
         [HttpGet]
         public async Task<ActionResult<UserCompleto>> Get()
         {
-            int id = int.Parse(User.Claims.First(x => x.Type == "userId").Value);
-
-            UserCompleto usuario = await _dapper.LoadDataSingle<UserCompleto>(@"EXEC spUser_Get @UserId='" + id + "'");
-
-            usuario.Experiencia = (List<Experiencia>?) await _dapper.LoadDataAsync<Experiencia>(@"EXEC spExperiencia_Get @UserId='" + id + "'");
-
-            usuario.Graduacao = (List<Graduacao>?) await _dapper.LoadDataAsync<Graduacao>(@"EXEC spGraduacao_Get @UserId='" + id + "'");
-
-            return usuario;
+            return await _repository.Get(int.Parse(User.Claims.First(x => x.Type == "userId").Value));
         }
 
         [HttpPut]
         public async Task<IActionResult> Put(User user)
-        {
-            string sql = @"EXEC spUser_PerfilUpdate
-                @UserId = @UserIdParameter,
-                @Nome = @NomeParameter,  
-                @Pais = @PaisParameter,  
-                @PlusCode = @PlusCodeParameter";
+        {            
+            user.Id = int.Parse(User.Claims.First(x => x.Type == "userId").Value);
 
-            DynamicParameters sqlParameters = new();
-
-            sqlParameters.Add("@UserIdParameter", int.Parse(User.Claims.First(x => x.Type == "userId").Value), DbType.Int32);
-            sqlParameters.Add("@NomeParameter", user.Nome, DbType.String);
-            sqlParameters.Add("@PaisParameter", user.Pais, DbType.String);
-            sqlParameters.Add("@PlusCodeParameter", user.PlusCode, DbType.String);
-
-            if (await _dapper.ExecuteSqlWithParametersAsync(sql, sqlParameters))
+            if (await _repository.Put(user))
             {
                 return Ok();
             }
@@ -71,7 +48,7 @@ namespace ApiBase.Controllers.Usuario
                 Password = updatePasswort.PasswordNova
             };
 
-            if (await _authHelper.UpdatePasswordAsync(userForSetPassword))
+            if (await _repository.Post(userForSetPassword))
             {
                 return NoContent();
             }
@@ -87,13 +64,7 @@ namespace ApiBase.Controllers.Usuario
         [HttpDelete]
         public async Task<IActionResult> Delete()
         {
-            string sql = @"EXEC spUser_Delete @UserId=@UserIdParameter";
-
-            DynamicParameters sqlParameters = new();
-
-            sqlParameters.Add("@UserIdParameter", int.Parse(User.Claims.First(x => x.Type == "userId").Value), DbType.Int32);
-
-            if (await _dapper.ExecuteSqlWithParametersAsync(sql, sqlParameters))
+            if (await _repository.Delete(int.Parse(User.Claims.First(x => x.Type == "userId").Value)))
             {
                 return NoContent();
             }

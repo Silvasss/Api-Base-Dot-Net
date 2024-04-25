@@ -1,4 +1,5 @@
-﻿using ApiBase.Data;
+﻿using ApiBase.Contracts.Usuario;
+using ApiBase.Data;
 using ApiBase.Models;
 using Dapper;
 using Microsoft.AspNetCore.Authorization;
@@ -11,31 +12,16 @@ namespace ApiBase.Controllers.Usuario
     [Authorize(Policy = "UsuarioOnly")]
     [Route("api/v1/graduacao")]
     [ApiController]
-    public class GraduacaoController(IConfiguration config) : ControllerBase
+    public class GraduacaoController(IGraduacaoRepository repository) : ControllerBase
     {
-        private readonly DataContextDapper _dapper = new(config);
+        private readonly IGraduacaoRepository _repository = repository;
 
         [HttpPost]
         public async Task<IActionResult> Post(Graduacao graduacao)
         {
-            string sql = @"EXEC spGraduacao_Upsert
-                @UserId = @UserIdParameter,                
-                @GraduacaoId = @GraduacaoIdParameter,                 
-                @InstituicaoId = @InstituicaoIdParameter, 
-                @CursoId = @CursoIdParameter, 
-                @Situacao = @SituacaoParameter";
-
-            DynamicParameters sqlParameters = new();
-
-            sqlParameters.Add("@UserIdParameter", int.Parse(User.Claims.First(x => x.Type == "userId").Value), DbType.Int32);
-            sqlParameters.Add("@GraduacaoIdParameter", graduacao.Id, DbType.Int32);
-            sqlParameters.Add("@InstituicaoIdParameter", graduacao.InstituicaoId, DbType.String);
-            sqlParameters.Add("@CursoIdParameter", graduacao.CursoId, DbType.String);
-            sqlParameters.Add("@SituacaoParameter", graduacao.Situacao, DbType.String);
-
-            if (await _dapper.ExecuteSqlWithParametersAsync(sql, sqlParameters))
+            if (await _repository.Post(graduacao, int.Parse(User.Claims.First(x => x.Type == "userId").Value)))
             {
-                return Created();
+                return NoContent();
             }
 
             return new ContentResult
@@ -49,22 +35,7 @@ namespace ApiBase.Controllers.Usuario
         [HttpPut]
         public async Task<IActionResult> Put(Graduacao graduacao)
         {
-            string sql = @"EXEC spGraduacao_Upsert
-                @UserId = @UserIdParameter,                
-                @GraduacaoId = @GraduacaoIdParameter,                 
-                @InstituicaoId = @InstituicaoIdParameter, 
-                @CursoId = @CursoIdParameter, 
-                @Situacao = @SituacaoParameter";
-
-            DynamicParameters sqlParameters = new();
-
-            sqlParameters.Add("@UserIdParameter", int.Parse(User.Claims.First(x => x.Type == "userId").Value), DbType.Int32);
-            sqlParameters.Add("@GraduacaoIdParameter", graduacao.Id, DbType.Int32);
-            sqlParameters.Add("@InstituicaoIdParameter", graduacao.InstituicaoId, DbType.String);
-            sqlParameters.Add("@CursoIdParameter", graduacao.CursoId, DbType.String);
-            sqlParameters.Add("@SituacaoParameter", graduacao.Situacao, DbType.String);
-
-            if (await _dapper.ExecuteSqlWithParametersAsync(sql, sqlParameters))
+            if (await _repository.Put(graduacao, int.Parse(User.Claims.First(x => x.Type == "userId").Value)))
             {
                 return NoContent();
             }
@@ -80,16 +51,7 @@ namespace ApiBase.Controllers.Usuario
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            string sql = @"EXEC spGraduacao_Delete 
-                @UserId = @UserIdParameter,
-                @GraduacaoId = @GraduacaoIdParameter";
-
-            DynamicParameters sqlParameters = new();
-
-            sqlParameters.Add("@UserIdParameter", int.Parse(User.Claims.First(x => x.Type == "userId").Value), DbType.Int32);
-            sqlParameters.Add("@GraduacaoIdParameter", id, DbType.Int32);
-
-            if (await _dapper.ExecuteSqlWithParametersAsync(sql, sqlParameters))
+            if (await _repository.Delete(id))
             {
                 return NoContent();
             }
