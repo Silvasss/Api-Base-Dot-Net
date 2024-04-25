@@ -6,7 +6,6 @@ using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
-using System.Text.RegularExpressions;
 using System.Text;
 using ApiBase.Dtos;
 
@@ -31,9 +30,10 @@ namespace ApiBase.Helpers
             );
         }
 
-        public string CreateToken(int userId)
+        public string CreateToken(int userId, string role, string userName)
         {
-            Claim[] claims = [new Claim("userId", userId.ToString())];
+
+            Claim[] claims = [new Claim("userId", userId.ToString()), new Claim("nome", userName), new Claim(ClaimTypes.Role, role)];
 
             string? tokenKeyString = _config.GetSection("AppSettings:TokenKey").Value;
 
@@ -55,7 +55,7 @@ namespace ApiBase.Helpers
             return tokenHandler.WriteToken(token);
         }
 
-        public bool SetPassword(UserForLoginDto userForSetPassword)
+        public async Task<bool> SetPasswordAsync(UserForLoginDto userForSetPassword)
         {
 
             byte[] passwordSalt = new byte[128 / 8];
@@ -67,35 +67,44 @@ namespace ApiBase.Helpers
 
             byte[] passwordHash = GetPasswordHash(userForSetPassword.Password, passwordSalt);
 
-            Console.WriteLine("0x" + BitConverter.ToString(passwordHash).Replace("-", ""));
-            Console.WriteLine(System.Text.Encoding.UTF8.GetString(passwordHash, 0, passwordHash.Length));
-            Console.WriteLine(System.Text.Encoding.UTF8.GetString(passwordHash));
-            Console.WriteLine(Convert.ToBase64String(passwordHash));
-
-            string sqlAddAuth = @"EXEC DotNetDatabase.spRegistration_Upsert
-                @Email = @EmailParam, 
+            string sqlAddAuth = @"EXEC spRegistration_insert
+                @Usuario = @UsuarioParam, 
                 @PasswordHash = @PasswordHashParam, 
                 @PasswordSalt = @PasswordSaltParam";
 
-            DynamicParameters sqlParameters = new DynamicParameters();
+            DynamicParameters sqlParameters = new();
 
-            sqlParameters.Add("@EmailParam", userForSetPassword.Email, DbType.String);
+            sqlParameters.Add("@UsuarioParam", userForSetPassword.Usuario, DbType.String);
             sqlParameters.Add("@PasswordHashParam", passwordHash, DbType.Binary);
             sqlParameters.Add("@PasswordSaltParam", passwordSalt, DbType.Binary);
 
-            return _dapper.ExecuteSqlWithParameters(sqlAddAuth, sqlParameters);
+            return await _dapper.ExecuteSqlWithParametersAsync(sqlAddAuth, sqlParameters);
         }
 
-        public bool IsValidEmail(string email)
+        public async Task<bool> UpdatePasswordAsync(UserForLoginDto userForSetPassword)
         {
-            string emailPattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
 
-            if (string.IsNullOrEmpty(email))
-                return false;
+            byte[] passwordSalt = new byte[128 / 8];
 
-            Regex regex = new(emailPattern);
+            using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
+            {
+                rng.GetNonZeroBytes(passwordSalt);
+            }
 
-            return regex.IsMatch(email);
+            byte[] passwordHash = GetPasswordHash(userForSetPassword.Password, passwordSalt);
+
+            string sqlAddAuth = @"EXEC spUser_SenhaUpdate
+                @Usuario = @UsuarioParam, 
+                @PasswordHash = @PasswordHashParam, 
+                @PasswordSalt = @PasswordSaltParam";
+
+            DynamicParameters sqlParameters = new();
+
+            sqlParameters.Add("@UsuarioParam", userForSetPassword.Usuario, DbType.String);
+            sqlParameters.Add("@PasswordHashParam", passwordHash, DbType.Binary);
+            sqlParameters.Add("@PasswordSaltParam", passwordSalt, DbType.Binary);
+
+            return await _dapper.ExecuteSqlWithParametersAsync(sqlAddAuth, sqlParameters);
         }
     }
 }

@@ -1,10 +1,15 @@
-﻿namespace ApiBase.Dtos
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ApiBase.Dtos
 {
     public partial class UserForRegistrationDto
     {
-        // If you require creating a UserForLoginDto object before setting, you can initialize the properties using a default non-null
-        public string Email { get; set; } = string.Empty;
+        [Required(ErrorMessage = "O nome do usuário é obrigatório")]
+        [StringLength(8, ErrorMessage = "Tamanho entre 6 a 8 caracteres", MinimumLength = 4)]
+        public string Usuario { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "A senha do usuário é obrigatória")]
+        [MinLength(6, ErrorMessage = "Tamanho mínimo da senha 6 caracteres")]
         public string Password { get; set; } = string.Empty;
-        public string PasswordConfirm { get; set; } = string.Empty;
     }
 }

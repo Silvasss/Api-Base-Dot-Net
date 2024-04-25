@@ -1,0 +1,117 @@
+{
+    "Centro Universitário Luterano de Palmas": {
+        "auth_Usuario": "luteranoPalmas",
+        "nome": "luteranoPalmas",
+        "plusCode": "PMC8+G4 Plano Diretor Expansão Sul, Palmas - State of Tocantins",
+        "cursos": [
+            {
+                "nome": "Agronomia",
+                "duracao": 10
+            },
+            {
+                "nome": "Biomedicina",
+                "duracao": 8
+            },
+            {
+                "nome": "Ciência da Computação",
+                "duracao": 8
+            },
+            {
+                "nome": "Direito",
+                "duracao": 10
+            },
+            {
+                "nome": "Engenharia Mecânica Automotiva",
+                "duracao": 10
+            }
+        ]
+    },
+    "Centro Universitário Católica do Tocantins": {
+        "auth_Usuario": "catolicaTocantins",
+        "nome": "catolicaTocantins",
+        "plusCode": "PMH9+MC Palmas, State of Tocantins",
+        "cursos": [
+            {
+                "nome": "Administração",
+                "duracao": 8
+            },
+            {
+                "nome": "Ciências Contábeis",
+                "duracao": 8
+            },
+            {
+                "nome": "Enfermagem",
+                "duracao": 10
+            },
+            {
+                "nome": "Medicina Veterinária",
+                "duracao": 10
+            },
+            {
+                "nome": "Pedagogia",
+                "duracao": 7
+            }
+        ]
+    },
+    "FAPAL - Faculdade de Palmas": {
+        "auth_Usuario": "fapalPalmas",
+        "nome": "fapalPalmas",
+        "plusCode": "QMR9+G5 Plano Diretor Sul, Palmas - State of Tocantins",
+        "cursos": [
+            {
+                "nome": "Arquitetura e Urbanismo",
+                "duracao": 10
+            },
+            {
+                "nome": "Biomedicina",
+                "duracao": 8
+            },
+            {
+                "nome": "Ciência da Computação",
+                "duracao": 8
+            },
+            {
+                "nome": "Direito",
+                "duracao": 10
+            },
+            {
+                "nome": "Educação Física (Bacharelado)",
+                "duracao": 8
+            }
+        ]
+    },
+    "Instituto Federal do Tocantins": {
+        "auth_Usuario": "uftPalmas",
+        "nome": "uftPalmas",
+        "plusCode": "RJCR+73 Plano Diretor Norte, Palmas - State of Tocantins",
+        "cursos": [
+            {
+                "nome": "Administração",
+                "duracao": 8
+            },
+            {
+                "nome": "Engenharia Agronômica",
+                "duracao": 10
+            },
+            {
+                "nome": "Ciências Biológicas",
+                "duracao": 8
+            },
+            {
+                "nome": "Física",
+                "duracao": 8
+            },
+            {
+                "nome": "Matemática",
+                "duracao": 8
+            }
+        ]
+    },
+    "Experiencia": {
+        "setor": "Tecnologia",
+        "empresa": "Solucao Ti Assist Tec Em Informatica",
+        "situacao": "Trabalhando",
+        "tipo": "Integral",
+        "plusCode": "RM9C+HG Plano Diretor Norte, Palmas - State of Tocantins"
+    }
+}
