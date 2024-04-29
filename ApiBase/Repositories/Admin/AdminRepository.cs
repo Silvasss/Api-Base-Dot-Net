@@ -1,5 +1,6 @@
 ﻿using ApiBase.Contracts.Admin;
 using ApiBase.Data;
+using ApiBase.Dtos;
 using ApiBase.Helpers;
 using ApiBase.Models;
 using Microsoft.EntityFrameworkCore;
@@ -50,7 +51,7 @@ namespace ApiBase.Repositories.Admin
             return await _entityFramework.AuditLogs.ToListAsync();
         }
 
-        public async Task<bool> Post(InstituicaoInsert instituicaoInsert)
+        public async Task<bool> Post(InstituicaoDtoCreate instituicaoInsert)
         {
             byte[] passwordSalt = new byte[128 / 8];
 

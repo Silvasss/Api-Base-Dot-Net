@@ -1,6 +1,8 @@
 ﻿using ApiBase.Contracts.UsuarioLogado;
 using ApiBase.Data;
+using ApiBase.Dtos;
 using ApiBase.Models;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
@@ -10,6 +12,7 @@ namespace ApiBase.Repositories.UsuarioLogado
     public class UsuarioRepository(IConfiguration config) : IUsuarioRepository
     {
         private readonly DataContextEF _entityFramework = new(config);
+        private readonly Mapper _mapper = new(new MapperConfiguration(cfg => { cfg.CreateMap<Usuario, UsuarioDto>().ReverseMap(); }));
 
         public async Task<bool> Delete(int id)
         {
@@ -30,12 +33,12 @@ namespace ApiBase.Repositories.UsuarioLogado
             return false;
         }
 
-        public async Task<ActionResult<Usuario>> Get(int id)
+        public async Task<ActionResult<UsuarioDto>> Get(int id)
         {
-            return await _entityFramework.Usuarios.Where(u => u.Usuario_Id == id).FirstAsync();
+            return _mapper.Map<UsuarioDto>(await _entityFramework.Usuarios.Where(u => u.Usuario_Id == id).FirstAsync());
         }
 
-        public async Task<bool> Put(Usuario user)
+        public async Task<bool> Put(UsuarioDto user)
         {
             Usuario? userDb = await _entityFramework.Usuarios.Where(a => a.Usuario_Id == user.Usuario_Id).FirstAsync();
 

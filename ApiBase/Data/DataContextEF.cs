@@ -90,6 +90,7 @@ namespace ApiBase.Data
 
             // Graduação
             modelBuilder.Entity<Graduacao>().HasKey(g => g.Graduacao_Id);
+            modelBuilder.Entity<Graduacao>().Property(g => g.Situacao).HasMaxLength(50).IsRequired();
             modelBuilder.Entity<Graduacao>().Property(g => g.Inicio).IsRequired();
             modelBuilder.Entity<Graduacao>().Property(g => g.Fim);
             modelBuilder.Entity<Graduacao>().Property(g => g.CreatedAt).ValueGeneratedOnAdd();

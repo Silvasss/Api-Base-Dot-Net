@@ -1,4 +1,5 @@
 ﻿using ApiBase.Contracts.Instituicao;
+using ApiBase.Dtos;
 using ApiBase.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +16,7 @@ namespace ApiBase.Controllers.Instituicao
 
         // Atualizar as informações da instituição
         [HttpPut]
-        public async Task<IActionResult> Put(InstituicaoInsert instituicao)
+        public async Task<IActionResult> Put(InstituicaoDto instituicao)
         {
             if (await _repository.Put(instituicao, int.Parse(User.Claims.First(x => x.Type == "userId").Value)))
             {

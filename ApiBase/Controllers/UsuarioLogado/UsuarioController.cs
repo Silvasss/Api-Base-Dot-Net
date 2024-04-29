@@ -1,4 +1,5 @@
 ﻿using ApiBase.Contracts.UsuarioLogado;
+using ApiBase.Dtos;
 using ApiBase.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,13 +16,13 @@ namespace ApiBase.Controllers.UsuarioLogado
 
         // Retorna todos os dados criado pelo usuário
         [HttpGet]
-        public async Task<ActionResult<Usuario>> Get()
+        public async Task<ActionResult<UsuarioDto>> Get()
         {
             return await _repository.Get(int.Parse(User.Claims.First(x => x.Type == "userId").Value));
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put(Usuario user)
+        public async Task<IActionResult> Put(UsuarioDto user)
         {            
             user.Usuario_Id = int.Parse(User.Claims.First(x => x.Type == "userId").Value);
 

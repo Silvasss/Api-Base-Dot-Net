@@ -1,4 +1,5 @@
 ﻿using ApiBase.Contracts.Instituicao;
+using ApiBase.Dtos;
 using ApiBase.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,14 +16,14 @@ namespace ApiBase.Controllers.Instituicao
 
         // Retorna os cursos da instituição 
         [HttpGet]
-        public async Task<IEnumerable<Curso>> Get()
+        public async Task<IEnumerable<CursoDto>> Get()
         {
             return await _repository.Get(int.Parse(User.Claims.First(x => x.Type == "userId").Value));
         }
 
         // Inserir informações de um curso
         [HttpPost]
-        public async Task<IActionResult> Post(Curso curso)
+        public async Task<IActionResult> Post(CursoDto curso)
         {
             if (await _repository.Put(curso, int.Parse(User.Claims.First(x => x.Type == "userId").Value)))
             {
@@ -39,7 +40,7 @@ namespace ApiBase.Controllers.Instituicao
 
         // Atualizar informações de um curso
         [HttpPut]
-        public async Task<IActionResult> Put(Curso curso)
+        public async Task<IActionResult> Put(CursoDto curso)
         {
             if (await _repository.Put(curso, int.Parse(User.Claims.First(x => x.Type == "userId").Value)))
             {

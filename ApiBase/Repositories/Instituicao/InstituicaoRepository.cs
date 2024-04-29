@@ -1,5 +1,6 @@
 ﻿using ApiBase.Contracts.Instituicao;
 using ApiBase.Data;
+using ApiBase.Dtos;
 using ApiBase.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
@@ -27,7 +28,7 @@ namespace ApiBase.Repositories.Instituicao
             return false;
         }
 
-        public async Task<bool> Put(InstituicaoInsert instituicao, int id)
+        public async Task<bool> Put(InstituicaoDto instituicao, int id)
         {
             InstituicaoEF? instituicaoDb = await _entityFramework.Instituicao.Where(i => i.Instituicao_Id == id).FirstAsync();
 

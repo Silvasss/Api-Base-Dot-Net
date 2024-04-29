@@ -1,12 +1,12 @@
-﻿using ApiBase.Models;
+﻿using ApiBase.Dtos;
 
 namespace ApiBase.Contracts.Instituicao
 {
     public interface ICursoRepository
     {
-        Task<IEnumerable<Curso>> Get(int id);
-        Task<bool> Post(Curso curso, int id);
-        Task<bool> Put(Curso curso, int id);
+        Task<IEnumerable<CursoDto>> Get(int id);
+        Task<bool> Post(CursoDto curso, int id);
+        Task<bool> Put(CursoDto curso, int id);
         Task<bool> Delete(int cursoId, int id);
     }
 }

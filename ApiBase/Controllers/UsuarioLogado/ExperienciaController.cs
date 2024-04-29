@@ -1,4 +1,5 @@
 ﻿using ApiBase.Contracts.UsuarioLogado;
+using ApiBase.Dtos;
 using ApiBase.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +15,7 @@ namespace ApiBase.Controllers.UsuarioLogado
         private readonly IExperienciaRepository _repository = repository;
 
         [HttpPost]
-        public async Task<IActionResult> Post(Experiencia experiencia)
+        public async Task<IActionResult> Post(ExperienciaDto experiencia)
         {
             if (await _repository.Post(experiencia, int.Parse(User.Claims.First(x => x.Type == "userId").Value)))
             {
@@ -30,7 +31,7 @@ namespace ApiBase.Controllers.UsuarioLogado
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put(Experiencia experiencia)
+        public async Task<IActionResult> Put(ExperienciaDto experiencia)
         {
             if (await _repository.Put(experiencia, int.Parse(User.Claims.First(x => x.Type == "userId").Value)))
             {

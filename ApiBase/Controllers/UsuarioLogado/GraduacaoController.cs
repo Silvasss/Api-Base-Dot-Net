@@ -1,4 +1,5 @@
 ﻿using ApiBase.Contracts.UsuarioLogado;
+using ApiBase.Dtos;
 using ApiBase.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +15,7 @@ namespace ApiBase.Controllers.UsuarioLogado
         private readonly IGraduacaoRepository _repository = repository;
 
         [HttpPost]
-        public async Task<IActionResult> Post(Graduacao graduacao)
+        public async Task<IActionResult> Post(GraduacaoDto graduacao)
         {
             if (await _repository.Post(graduacao, int.Parse(User.Claims.First(x => x.Type == "userId").Value)))
             {
@@ -30,7 +31,7 @@ namespace ApiBase.Controllers.UsuarioLogado
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put(Graduacao graduacao)
+        public async Task<IActionResult> Put(GraduacaoDto graduacao)
         {
             if (await _repository.Put(graduacao, int.Parse(User.Claims.First(x => x.Type == "userId").Value)))
             {

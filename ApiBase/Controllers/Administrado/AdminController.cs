@@ -1,4 +1,5 @@
 ﻿using ApiBase.Contracts.Admin;
+using ApiBase.Dtos;
 using ApiBase.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +23,7 @@ namespace ApiBase.Controllers.Administrado
 
         // Para inserir uma conta do tipo 'instituição'
         [HttpPost]
-        public async Task<IActionResult> Post(InstituicaoInsert instituicaoInsert)
+        public async Task<IActionResult> Post(InstituicaoDtoCreate instituicaoInsert)
         {
             if (await _repository.Post(instituicaoInsert))
             {

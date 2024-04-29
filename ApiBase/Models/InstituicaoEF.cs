@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace ApiBase.Models
+﻿namespace ApiBase.Models
 {
     public class InstituicaoEF
     {
@@ -27,15 +25,5 @@ namespace ApiBase.Models
         public InstituicaoEF? Instituicao { get; set; }
         public int Instituicao_Id { get;set; }
         public IEnumerable<Graduacao>? Graduacoes { get; set;}
-    }
-    public partial class InstituicaoInsert : InstituicaoEF
-    {
-        [Required(ErrorMessage = "O nome do usuário é obrigatório")]
-        [StringLength(32, ErrorMessage = "Tamanho entre 6 a 32 caracteres", MinimumLength = 4)]
-        public required string Usuario { get; set; }
-
-        [Required(ErrorMessage = "A senha do usuário é obrigatória")]
-        [MinLength(6, ErrorMessage = "Tamanho mínimo da senha 6 caracteres")]
-        public required string Password { get; set; }
     }
 }

@@ -33,7 +33,7 @@
     public partial class Graduacao
     {
         public int Graduacao_Id { get; set; }
-        public required string Situacao { get; set; }
+        public string? Situacao { get; set; }
         public DateTime? Inicio { get; set; }
         public DateTime? Fim { get; set; }
         public DateTime? CreatedAt { get; set; }

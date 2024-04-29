@@ -1,5 +1,6 @@
 ﻿using ApiBase.Contracts.UsuarioLogado;
 using ApiBase.Data;
+using ApiBase.Dtos;
 using ApiBase.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
@@ -9,7 +10,6 @@ namespace ApiBase.Repositories.UsuarioLogado
     public class GraduacaoRepository(IConfiguration config) : IGraduacaoRepository
     {
         private readonly DataContextEF _entityFramework = new(config);
-
         public async Task<bool> Delete(int id, int userId)
         {
             Graduacao? graduacaoDb = await _entityFramework.Graduacaos.Where(g => g.Graduacao_Id == id && g.Usuario_Id == userId).FirstAsync();
@@ -27,7 +27,7 @@ namespace ApiBase.Repositories.UsuarioLogado
             return false;
         }
 
-        public async Task<bool> Post(Graduacao graduacao, int id)
+        public async Task<bool> Post(GraduacaoDto graduacao, int id)
         {
             Graduacao graduacaoDb = new()
             {
@@ -55,7 +55,7 @@ namespace ApiBase.Repositories.UsuarioLogado
             return false;
         }
 
-        public async Task<bool> Put(Graduacao graduacao, int id)
+        public async Task<bool> Put(GraduacaoDto graduacao, int id)
         {
             Graduacao? graduacaoDb = await _entityFramework.Graduacaos.Where(g => g.Graduacao_Id == graduacao.Graduacao_Id && g.Usuario_Id == id).FirstAsync();
 

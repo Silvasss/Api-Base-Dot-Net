@@ -1,10 +1,11 @@
-﻿using ApiBase.Models;
+﻿using ApiBase.Dtos;
+using ApiBase.Models;
 
 namespace ApiBase.Contracts
 {
     public interface IVisitanteRepository
     {
-        Task<IEnumerable<Usuario>> Index();
-        Task<Usuario> All(int userId);
+        Task<IEnumerable<UsuarioDto>> Index();
+        Task<UsuarioDto> All(int userId);
     }
 }

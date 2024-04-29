@@ -1,5 +1,6 @@
 ﻿using ApiBase.Contracts.UsuarioLogado;
 using ApiBase.Data;
+using ApiBase.Dtos;
 using ApiBase.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
@@ -27,7 +28,7 @@ namespace ApiBase.Repositories.UsuarioLogado
             return false;
         }
 
-        public async Task<bool> Post(Experiencia experiencia, int id)
+        public async Task<bool> Post(ExperienciaDto experiencia, int id)
         {
             Experiencia experienciaDb = new()
             {
@@ -51,7 +52,7 @@ namespace ApiBase.Repositories.UsuarioLogado
             return false;
         }
 
-        public async Task<bool> Put(Experiencia experiencia, int id)
+        public async Task<bool> Put(ExperienciaDto experiencia, int id)
         {
             Experiencia? experienciaDb = await _entityFramework.Experiencia.Where(e => e.Experiencia_Id == experiencia.Experiencia_Id && e.Usuario_Id == id).FirstAsync();
 

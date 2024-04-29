@@ -1,4 +1,5 @@
 ﻿using ApiBase.Contracts.Instituicao;
+using ApiBase.Dtos;
 using ApiBase.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,20 +16,20 @@ namespace ApiBase.Controllers.Instituicao
 
         // Retorna as solicitações
         [HttpGet]
-        public async Task<IEnumerable<Solicitacao>> Get()
+        public async Task<IEnumerable<SolicitacaoDto>> Get()
         {
             return await _repository.Get(int.Parse(User.Claims.First(x => x.Type == "userId").Value));
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Solicitacao>> Get(int id)
+        public async Task<ActionResult<SolicitacaoDto>> Get(int id)
         {
             return await _repository.GetSolicitacao(id, int.Parse(User.Claims.First(x => x.Type == "userId").Value));
         }
 
         // Para atualizar informações de uma solicitação de um usuário
         [HttpPut]
-        public async Task<IActionResult> Put(Solicitacao solicitaCurso)
+        public async Task<IActionResult> Put(SolicitacaoDto solicitaCurso)
         {
             if (await _repository.Put(solicitaCurso, int.Parse(User.Claims.First(x => x.Type == "userId").Value)))
             {
