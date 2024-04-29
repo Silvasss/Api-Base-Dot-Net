@@ -7,7 +7,7 @@ using System.Net;
 namespace ApiBase.Controllers.Instituicao
 {
     [Authorize(Policy = "InstituicaoOnly")]
-    [Route("api/v1/instituicao")]
+    [Route("instituicao")]
     [ApiController]
     public class InstituicaoController(IInstituicaoRepository repository) : ControllerBase
     {
@@ -15,7 +15,7 @@ namespace ApiBase.Controllers.Instituicao
 
         // Atualizar as informações da instituição
         [HttpPut]
-        public async Task<IActionResult> Put(InstituicaoModel instituicao)
+        public async Task<IActionResult> Put(InstituicaoInsert instituicao)
         {
             if (await _repository.Put(instituicao, int.Parse(User.Claims.First(x => x.Type == "userId").Value)))
             {

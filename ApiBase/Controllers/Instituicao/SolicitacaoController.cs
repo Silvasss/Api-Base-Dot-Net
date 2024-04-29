@@ -7,7 +7,7 @@ using System.Net;
 namespace ApiBase.Controllers.Instituicao
 {
     [Authorize(Policy = "InstituicaoOnly")]
-    [Route("api/v1/solicitacao")]
+    [Route("instituicao/solicitacao")]
     [ApiController]
     public class SolicitacaoController(ISoliciticacoesRepository repository) : ControllerBase
     {
@@ -15,20 +15,20 @@ namespace ApiBase.Controllers.Instituicao
 
         // Retorna as solicitações
         [HttpGet]
-        public async Task<IEnumerable<SolicitaCurso>> Get()
+        public async Task<IEnumerable<Solicitacao>> Get()
         {
             return await _repository.Get(int.Parse(User.Claims.First(x => x.Type == "userId").Value));
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<SolicitaCurso>> Get(int id)
+        public async Task<ActionResult<Solicitacao>> Get(int id)
         {
             return await _repository.GetSolicitacao(id, int.Parse(User.Claims.First(x => x.Type == "userId").Value));
         }
 
         // Para atualizar informações de uma solicitação de um usuário
         [HttpPut]
-        public async Task<IActionResult> Put(SolicitaCurso solicitaCurso)
+        public async Task<IActionResult> Put(Solicitacao solicitaCurso)
         {
             if (await _repository.Put(solicitaCurso, int.Parse(User.Claims.First(x => x.Type == "userId").Value)))
             {

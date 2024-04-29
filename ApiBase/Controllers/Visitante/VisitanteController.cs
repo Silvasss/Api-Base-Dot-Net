@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ApiBase.Controllers.Visitante
 {
-    [Route("api/v1")]
+    [Route("")]
     [ApiController]
     public class VisitanteController(IVisitanteRepository repository) : ControllerBase
     {
@@ -12,13 +12,13 @@ namespace ApiBase.Controllers.Visitante
 
         // Retorna todos os usuários
         [HttpGet]
-        public Task<IEnumerable<User>> Index()
+        public async Task<IEnumerable<Usuario>> Index()
         {
-            return _repository.Index();
+            return await _repository.Index();
         }
 
         [HttpGet("{userId}")]
-        public async Task<UserCompleto> All(int userId)
+        public async Task<Usuario> All(int userId)
         {
             return await _repository.All(userId);
         }

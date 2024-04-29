@@ -1,16 +1,13 @@
-﻿using ApiBase.Contracts.Usuario;
-using ApiBase.Data;
+﻿using ApiBase.Contracts.UsuarioLogado;
 using ApiBase.Models;
-using Dapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
 using System.Net;
 
-namespace ApiBase.Controllers.Usuario
+namespace ApiBase.Controllers.UsuarioLogado
 {
     [Authorize(Policy = "UsuarioOnly")]
-    [Route("api/v1/graduacao")]
+    [Route("usuario/graduacao")]
     [ApiController]
     public class GraduacaoController(IGraduacaoRepository repository) : ControllerBase
     {
@@ -51,7 +48,7 @@ namespace ApiBase.Controllers.Usuario
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            if (await _repository.Delete(id))
+            if (await _repository.Delete(id, int.Parse(User.Claims.First(x => x.Type == "userId").Value)))
             {
                 return NoContent();
             }

@@ -1,6 +1,6 @@
 ﻿using ApiBase.Models;
 
-namespace ApiBase.Contracts
+namespace ApiBase.Contracts.UsuarioLogado
 {
     public interface IExperienciaRepository
     {

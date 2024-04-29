@@ -7,7 +7,7 @@ using System.Net;
 namespace ApiBase.Controllers.Instituicao
 {
     [Authorize(Policy = "InstituicaoOnly")]
-    [Route("api/v1/curso")]
+    [Route("instituicao/curso")]
     [ApiController]
     public class CursoController(ICursoRepository repository) : ControllerBase
     {

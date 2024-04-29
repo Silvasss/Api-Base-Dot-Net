@@ -1,13 +1,13 @@
-﻿using ApiBase.Contracts;
+﻿using ApiBase.Contracts.UsuarioLogado;
 using ApiBase.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
-namespace ApiBase.Controllers.Usuario
+namespace ApiBase.Controllers.UsuarioLogado
 {
     [Authorize(Policy = "UsuarioOnly")]
-    [Route("api/v1/experiencia")]
+    [Route("usuario/experiencia")]
     [ApiController]
     public class ExperienciaController(IExperienciaRepository repository) : ControllerBase
     {

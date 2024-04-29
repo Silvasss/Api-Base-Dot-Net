@@ -1,27 +1,22 @@
 ﻿using ApiBase.Contracts;
 using ApiBase.Data;
 using ApiBase.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApiBase.Repositories
 {
     public class VisitanteRepository(IConfiguration config) : IVisitanteRepository
     {
-        private readonly DataContextDapper _dapper = new(config);
+        private readonly DataContextEF _entityFramework = new(config);
 
-        public async Task<UserCompleto> All(int userId)
+        public async Task<Usuario> All(int userId)
         {
-            UserCompleto usuario = await _dapper.LoadDataSingle<UserCompleto>(@"EXEC spUser_Get @UserId='" + userId + "'");
-
-            usuario.Experiencia = (List<Experiencia>?)await _dapper.LoadDataAsync<Experiencia>(@"EXEC spExperiencia_Get @UserId='" + userId + "'");
-
-            usuario.Graduacao = (List<Graduacao>?)await _dapper.LoadDataAsync<Graduacao>(@"EXEC spGraduacao_Get @UserId='" + userId + "'");
-
-            return usuario;
+            return await _entityFramework.Usuarios.Where(u => u.Usuario_Id == userId && u.TipoConta.Nome == "usuario").FirstAsync();
         }
 
-        public Task<IEnumerable<User>> Index()
+        public async Task<IEnumerable<Usuario>> Index()
         {
-            return _dapper.LoadDataAsync<User>(@"EXEC spUser_Get");
+            return await _entityFramework.Usuarios.Where(u => u.TipoConta.Nome == "usuario").ToListAsync();
         }
     }
 }

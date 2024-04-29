@@ -4,7 +4,7 @@ namespace ApiBase.Contracts
 {
     public interface IVisitanteRepository
     {
-        Task<IEnumerable<User>> Index();
-        Task<UserCompleto> All(int userId);
+        Task<IEnumerable<Usuario>> Index();
+        Task<Usuario> All(int userId);
     }
 }

@@ -1,29 +1,27 @@
 ﻿using ApiBase.Contracts.Instituicao;
 using ApiBase.Data;
 using ApiBase.Models;
-using Dapper;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
 
 namespace ApiBase.Repositories.Instituicao
 {
     public class CursoRepository(IConfiguration config) : ICursoRepository
     {
-        private readonly DataContextDapper _dapper = new(config);
+        private readonly DataContextEF _entityFramework = new(config);
 
         public async Task<bool> Delete(int cursoId, int id)
         {
-            string sql = @"EXEC spInstituicao_Curso_Delete 
-                @InstituicaoId = @UserIdParameter,                   
-                @CursoId = @CursoIdParameter";
+            Curso? cursoDb = await _entityFramework.Curso.Where(c => c.Curso_Id == cursoId && c.Instituicao_Id == id).FirstAsync();
 
-            DynamicParameters sqlParameters = new();
-
-            sqlParameters.Add("@UserIdParameter", id, DbType.Int32);
-            sqlParameters.Add("@CursoIdParameter", cursoId, DbType.Int32);
-
-            if (await _dapper.ExecuteSqlWithParametersAsync(sql, sqlParameters))
+            if (cursoDb != null)
             {
-                return true;
+                _entityFramework.Remove(cursoDb);
+
+                if (await _entityFramework.SaveChangesAsync() > 0)
+                {
+                    return true;
+                }
             }
 
             return false;
@@ -31,21 +29,20 @@ namespace ApiBase.Repositories.Instituicao
 
         public async Task<IEnumerable<Curso>> Get(int id)
         {
-            return await _dapper.LoadDataAsync<Curso>(@"EXEC spInstituicao_CursosGet @InstituicaoId='" + id + "'");
+            return await _entityFramework.Curso.Where(c => c.Instituicao_Id == id).ToListAsync();
         }
 
         public async Task<bool> Post(Curso curso, int id)
         {
-            string sql = @"EXEC spInstituicao_Curso_Upsert
-                @InstituicaoId = @UserIdParameter,
-                @Nome = @NomeParameter";
+            Curso cursoDb = new()
+            {
+                Instituicao_Id = id,
+                Nome = curso.Nome
+            };
 
-            DynamicParameters sqlParameters = new();
+            await _entityFramework.AddAsync(cursoDb);
 
-            sqlParameters.Add("@UserIdParameter", id, DbType.Int32);
-            sqlParameters.Add("@NomeParameter", curso.Nome, DbType.String);
-
-            if (await _dapper.ExecuteSqlWithParametersAsync(sql, sqlParameters))
+            if (await _entityFramework.SaveChangesAsync() > 0)
             {
                 return true;
             }
@@ -55,22 +52,17 @@ namespace ApiBase.Repositories.Instituicao
 
         public async Task<bool> Put(Curso curso, int id)
         {
-            string sql = @"EXEC spInstituicao_Curso_Upsert
-                @InstituicaoId = @UserIdParameter,                   
-                @CursoId = @CursoIdParameter,            
-                @Nome = @NomeParameter,
-                @IsActive = @IsActiveParameter";
+            Curso? cursoDb = await _entityFramework.Curso.Where(c => c.Curso_Id == curso.Curso_Id && c.Instituicao_Id == id).FirstAsync();
 
-            DynamicParameters sqlParameters = new();
-
-            sqlParameters.Add("@UserIdParameter", id, DbType.Int32);
-            sqlParameters.Add("@CursoIdParameter", curso.Id, DbType.Int32);
-            sqlParameters.Add("@NomeParameter", curso.Nome, DbType.String);
-            sqlParameters.Add("@IsActiveParameter", curso.IsActive, DbType.Boolean);
-
-            if (await _dapper.ExecuteSqlWithParametersAsync(sql, sqlParameters))
+            if (cursoDb != null)
             {
-                return true;
+                cursoDb.Nome = cursoDb.Nome;
+                cursoDb.Ativo = cursoDb.Ativo;
+
+                if (await _entityFramework.SaveChangesAsync() > 0)
+                {
+                    return true;
+                }
             }
 
             return false;

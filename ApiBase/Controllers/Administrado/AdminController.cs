@@ -7,7 +7,7 @@ using System.Net;
 namespace ApiBase.Controllers.Administrado
 {
     [Authorize(Policy = "AdminOnly")]
-    [Route("api/v1/admin")]
+    [Route("admin")]
     [ApiController]
     public class AdminController(IAdminRepository repository) : ControllerBase
     {

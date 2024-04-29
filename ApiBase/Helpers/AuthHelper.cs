@@ -1,5 +1,4 @@
 ﻿using ApiBase.Data;
-using Dapper;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.IdentityModel.Tokens;
 using System.Data;
@@ -8,6 +7,8 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using ApiBase.Dtos;
+using ApiBase.Models;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace ApiBase.Helpers
@@ -15,7 +16,7 @@ namespace ApiBase.Helpers
     public class AuthHelper(IConfiguration config)
     {
         private readonly IConfiguration _config = config;
-        private readonly DataContextDapper _dapper = new(config);
+        private readonly DataContextEF _entityFramework = new(config);
 
         public byte[] GetPasswordHash(string password, byte[] passwordSalt)
         {
@@ -67,44 +68,32 @@ namespace ApiBase.Helpers
 
             byte[] passwordHash = GetPasswordHash(userForSetPassword.Password, passwordSalt);
 
-            string sqlAddAuth = @"EXEC spRegistration_insert
-                @Usuario = @UsuarioParam, 
-                @PasswordHash = @PasswordHashParam, 
-                @PasswordSalt = @PasswordSaltParam";
-
-            DynamicParameters sqlParameters = new();
-
-            sqlParameters.Add("@UsuarioParam", userForSetPassword.Usuario, DbType.String);
-            sqlParameters.Add("@PasswordHashParam", passwordHash, DbType.Binary);
-            sqlParameters.Add("@PasswordSaltParam", passwordSalt, DbType.Binary);
-
-            return await _dapper.ExecuteSqlWithParametersAsync(sqlAddAuth, sqlParameters);
-        }
-
-        public async Task<bool> UpdatePasswordAsync(UserForLoginDto userForSetPassword)
-        {
-
-            byte[] passwordSalt = new byte[128 / 8];
-
-            using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
+            if ((await _entityFramework.Auth.Where(a => a.Usuario == userForSetPassword.Usuario).FirstAsync()) == null)
             {
-                rng.GetNonZeroBytes(passwordSalt);
+                Auth novoAuth = new()
+                {
+                    Usuario = userForSetPassword.Usuario,
+                    PasswordHash = passwordHash,
+                    PasswordSalt = passwordSalt
+                };
+
+                Usuario novoUsuario = new()
+                {
+                    Nome = userForSetPassword.Usuario,
+                    Tipo_Conta_Id = 2 // Tipo usuário
+                };
+
+                novoAuth.UsuarioPerfil = novoUsuario;
+
+                await _entityFramework.AddAsync(novoAuth);
+
+                if (await _entityFramework.SaveChangesAsync() > 0)
+                {
+                    return true;
+                }
             }
 
-            byte[] passwordHash = GetPasswordHash(userForSetPassword.Password, passwordSalt);
-
-            string sqlAddAuth = @"EXEC spUser_SenhaUpdate
-                @Usuario = @UsuarioParam, 
-                @PasswordHash = @PasswordHashParam, 
-                @PasswordSalt = @PasswordSaltParam";
-
-            DynamicParameters sqlParameters = new();
-
-            sqlParameters.Add("@UsuarioParam", userForSetPassword.Usuario, DbType.String);
-            sqlParameters.Add("@PasswordHashParam", passwordHash, DbType.Binary);
-            sqlParameters.Add("@PasswordSaltParam", passwordSalt, DbType.Binary);
-
-            return await _dapper.ExecuteSqlWithParametersAsync(sqlAddAuth, sqlParameters);
+            return false;
         }
     }
 }

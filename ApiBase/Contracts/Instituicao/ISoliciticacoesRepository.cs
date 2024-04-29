@@ -4,8 +4,8 @@ namespace ApiBase.Contracts.Instituicao
 {
     public interface ISoliciticacoesRepository
     {
-        Task<IEnumerable<SolicitaCurso>> Get(int id);
-        Task<SolicitaCurso> GetSolicitacao(int id, int InstituicaoId);
-        Task<bool> Put(SolicitaCurso solicitaCurso, int id);
+        Task<IEnumerable<Solicitacao>> Get(int id);
+        Task<Solicitacao> GetSolicitacao(int id, int InstituicaoId);
+        Task<bool> Put(Solicitacao solicitaCurso, int id);
     }
 }

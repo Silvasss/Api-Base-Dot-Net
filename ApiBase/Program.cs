@@ -1,11 +1,11 @@
 using ApiBase.Contracts;
 using ApiBase.Contracts.Admin;
 using ApiBase.Contracts.Instituicao;
-using ApiBase.Contracts.Usuario;
+using ApiBase.Contracts.UsuarioLogado;
 using ApiBase.Repositories;
 using ApiBase.Repositories.Admin;
 using ApiBase.Repositories.Instituicao;
-using ApiBase.Repositories.Usuario;
+using ApiBase.Repositories.UsuarioLogado;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;

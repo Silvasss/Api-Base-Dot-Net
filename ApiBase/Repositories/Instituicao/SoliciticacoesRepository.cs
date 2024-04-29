@@ -1,55 +1,38 @@
 ﻿using ApiBase.Contracts.Instituicao;
 using ApiBase.Data;
 using ApiBase.Models;
-using Dapper;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
 
 namespace ApiBase.Repositories.Instituicao
 {
     public class SoliciticacoesRepository(IConfiguration config) : ISoliciticacoesRepository
     {
-        private readonly DataContextDapper _dapper = new(config);
+        private readonly DataContextEF _entityFramework = new(config);
 
-        public async Task<IEnumerable<SolicitaCurso>> Get(int id)
+        public async Task<IEnumerable<Solicitacao>> Get(int id)
         {
-            return await _dapper.LoadDataAsync<SolicitaCurso>(@"EXEC spInstituicao_SolicitacaoGet @InstituicaoId='" + id + "'");
+            return await _entityFramework.Solicitacao.Where(s => s.Instituicao_Id == id).ToListAsync();
         }
 
-        public async Task<SolicitaCurso> GetSolicitacao(int id, int InstituicaoId)
+        public async Task<Solicitacao> GetSolicitacao(int id, int InstituicaoId)
         {
-            string sql = @"EXEC spInstituicao_SolicitacaoGet 
-                @InstituicaoId=@UserIdParameter,
-                @SolicitacaoId=@SolicitacaoIdParameter";
-
-            DynamicParameters sqlParameters = new();
-
-            sqlParameters.Add("@UserIdParameter", InstituicaoId, DbType.Int32);
-            sqlParameters.Add("@SolicitacaoIdParameter", id, DbType.Int32);
-
-            return await _dapper.LoadDataSingleWithParametersAsync<SolicitaCurso>(sql, sqlParameters);
+            return await _entityFramework.Solicitacao.Where(s => s.Solicitacao_Id == id && s.Instituicao_Id == InstituicaoId).FirstAsync();
         }
 
-        public async Task<bool> Put(SolicitaCurso solicitaCurso, int id)
+        public async Task<bool> Put(Solicitacao solicitacao, int id)
         {
-            string sql = @"EXEC spInstituicao_Solicitacao_Update
-                @InstituicaoId=@UserIdParameter,
-                @SolicitacaoId = @SolicitacaoIdParameter,                
-                @Situacao = @SituacaoParameter,                 
-                @Explicacao = @ExplicacaoParameter, 
-                @IsActive = @IsActiveParameter";
+            Solicitacao? solicitacaoDb = await _entityFramework.Solicitacao.Where(s => s.Solicitacao_Id == solicitacao.Solicitacao_Id && s.Instituicao_Id == id).FirstAsync();
 
-            DynamicParameters sqlParameters = new();
-
-            sqlParameters.Add("@UserIdParameter", id, DbType.Int32);
-            sqlParameters.Add("@SolicitacaoIdParameter", solicitaCurso.Id, DbType.Int32);
-            sqlParameters.Add("@SituacaoParameter", solicitaCurso.Situacao, DbType.String);
-            sqlParameters.Add("@ExplicacaoParameter", solicitaCurso.Explicacao, DbType.String);
-            sqlParameters.Add("@IsActiveParameter", solicitaCurso.IsActive, DbType.Boolean);
-
-            if (await _dapper.ExecuteSqlWithParametersAsync(sql, sqlParameters))
+            if (solicitacaoDb != null)
             {
-                return true;
+                solicitacaoDb.Descricao = solicitacao.Descricao;
+                solicitacaoDb.Ativo = solicitacao.Ativo;
+
+                if (await _entityFramework.SaveChangesAsync() > 0)
+                {
+                    return true;
+                }
             }
 
             return false;

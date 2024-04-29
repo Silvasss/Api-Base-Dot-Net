@@ -1,11 +1,11 @@
 ﻿using ApiBase.Models;
 
-namespace ApiBase.Contracts.Usuario
+namespace ApiBase.Contracts.UsuarioLogado
 {
     public interface IGraduacaoRepository
     {
         Task<bool> Post(Graduacao graduacao, int id);
         Task<bool> Put(Graduacao graduacao, int id);
-        Task<bool> Delete(int id);
+        Task<bool> Delete(int id, int userId);
     }
 }
