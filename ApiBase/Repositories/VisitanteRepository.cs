@@ -14,12 +14,12 @@ namespace ApiBase.Repositories
 
         public async Task<UsuarioDto> All(int userId)
         {
-            return _mapper.Map<UsuarioDto>(await _entityFramework.Usuarios.Where(u => u.Usuario_Id == userId && u.TipoConta.Nome == "usuario").FirstAsync());
+            return _mapper.Map<UsuarioDto>(await _entityFramework.Usuarios.Where(u => u.Usuario_Id == userId && u.Tipo_Conta_Id == 2).FirstAsync());
         }
 
         public async Task<IEnumerable<UsuarioDto>> Index()
         {
-            return (IEnumerable<UsuarioDto>)_mapper.Map<UsuarioDto>(await _entityFramework.Usuarios.Where(u => u.TipoConta.Nome == "usuario").ToListAsync());
+            return (IEnumerable<UsuarioDto>)_mapper.Map<UsuarioDto>(await _entityFramework.Usuarios.Where(u => u.Tipo_Conta_Id == 2).ToListAsync());
         }
     }
 }

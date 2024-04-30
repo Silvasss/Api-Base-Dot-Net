@@ -10,6 +10,5 @@
         public DateTime? UpdatedAt { get; set; }
         public Usuario? UsuarioPerfil { get; set; }
         public InstituicaoEF? Instituicao { get; set; }
-        public IEnumerable<AuditLogs>? AuditLogs { get; set; }
     }
 }

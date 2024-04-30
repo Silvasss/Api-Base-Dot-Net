@@ -10,7 +10,6 @@
         public DateTime? UpdatedAt { get; set; }
         public Auth? Auth { get; set; }
         public int Auth_Id { get; set; }
-        public TipoConta? TipoConta { get; set; }
         public int Tipo_Conta_Id { get; set; }
         public IEnumerable<Experiencia>? Experiencias { get; set; }
         public IEnumerable<Graduacao>? graduacoes { get; set; }
@@ -34,14 +33,13 @@
     {
         public int Graduacao_Id { get; set; }
         public string? Situacao { get; set; }
+        public int Curso_Id { get; set; }
         public DateTime? Inicio { get; set; }
         public DateTime? Fim { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public Usuario? Usuario { get; set; }
         public int Usuario_Id { get; set; }
-        public Curso? Curso { get; set; }
-        public int Curso_Id { get; set; }
         public Solicitacao? Solicitacao { get; set; }
         public int InstituicaoId { get; set; }
     }
@@ -49,11 +47,10 @@
     {
         public int Solicitacao_Id { get; set; }
         public string Descricao { get; set; } = string.Empty;
+        public int Instituicao_Id { get; set; }
         public bool Ativo { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-        public InstituicaoEF? Instituicao { get; set; }
-        public int Instituicao_Id { get; set; }
         public Graduacao? Graduacao { get; set; }
         public int Graduacao_Id { get; set; }        
     }

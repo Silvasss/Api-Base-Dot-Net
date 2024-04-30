@@ -60,8 +60,10 @@ namespace ApiBase.Controllers
                 }
             }
 
+            TipoConta politicaConta = await _entityFramework.TipoContas.Where(t => t.Tipo_Conta_Id == dadosLogin.UsuarioPerfil.Tipo_Conta_Id).FirstAsync();
+
             return Ok(new Dictionary<string, string> {
-                {"token", _authHelper.CreateToken(dadosLogin.UsuarioPerfil.Usuario_Id, dadosLogin.UsuarioPerfil.TipoConta.Nome, userForLogin.Usuario)}
+                {"token", _authHelper.CreateToken(dadosLogin.UsuarioPerfil.Usuario_Id, politicaConta.Nome, userForLogin.Usuario)}
             });
         }
     }
