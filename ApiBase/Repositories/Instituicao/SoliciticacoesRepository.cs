@@ -15,7 +15,7 @@ namespace ApiBase.Repositories.Instituicao
 
         public async Task<IEnumerable<SolicitacaoDto>> Get(int id)
         {
-            return (IEnumerable<SolicitacaoDto>)_mapper.Map<SolicitacaoDto>(await _entityFramework.Solicitacao.Where(s => s.Instituicao_Id == id).ToListAsync());
+            return _mapper.Map<IEnumerable<SolicitacaoDto>>(await _entityFramework.Solicitacao.Where(s => s.Instituicao_Id == id).ToListAsync());
         }
 
         public async Task<SolicitacaoDto> GetSolicitacao(int id, int InstituicaoId)

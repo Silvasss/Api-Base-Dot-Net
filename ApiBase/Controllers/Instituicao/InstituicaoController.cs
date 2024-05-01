@@ -1,6 +1,5 @@
 ﻿using ApiBase.Contracts.Instituicao;
 using ApiBase.Dtos;
-using ApiBase.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -13,6 +12,12 @@ namespace ApiBase.Controllers.Instituicao
     public class InstituicaoController(IInstituicaoRepository repository) : ControllerBase
     {
         private readonly IInstituicaoRepository _repository = repository;
+
+        [HttpGet]
+        public async Task<InstituicaoDto> Get()
+        {
+            return await _repository.Get(int.Parse(User.Claims.First(x => x.Type == "userId").Value));
+        }
 
         // Atualizar as informações da instituição
         [HttpPut]

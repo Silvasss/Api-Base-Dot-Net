@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ApiBase.Migrations
 {
     [DbContext(typeof(DataContextEF))]
-    [Migration("20240430131533_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240430184015_InitalCreate")]
+    partial class InitalCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -40,7 +40,8 @@ namespace ApiBase.Migrations
 
                     b.Property<DateTime>("CreatedDate")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
 
                     b.Property<string>("Descricao")
                         .IsRequired()
@@ -67,7 +68,8 @@ namespace ApiBase.Migrations
 
                     b.Property<DateTime?>("CreatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
 
                     b.Property<byte[]>("PasswordHash")
                         .IsRequired()
@@ -79,7 +81,8 @@ namespace ApiBase.Migrations
 
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasComputedColumnSql("getdate()");
 
                     b.Property<string>("Usuario")
                         .IsRequired()
@@ -109,7 +112,8 @@ namespace ApiBase.Migrations
 
                     b.Property<DateTime?>("CreatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
 
                     b.Property<int>("Instituicao_Id")
                         .HasColumnType("int");
@@ -121,7 +125,8 @@ namespace ApiBase.Migrations
 
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasComputedColumnSql("getdate()");
 
                     b.HasKey("Curso_Id");
 
@@ -148,7 +153,8 @@ namespace ApiBase.Migrations
 
                     b.Property<DateTime?>("CreatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
 
                     b.Property<string>("Empresa")
                         .IsRequired()
@@ -174,7 +180,8 @@ namespace ApiBase.Migrations
 
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasComputedColumnSql("getdate()");
 
                     b.Property<int>("Usuario_Id")
                         .HasColumnType("int");
@@ -201,7 +208,8 @@ namespace ApiBase.Migrations
 
                     b.Property<DateTime?>("CreatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
 
                     b.Property<int>("Curso_Id")
                         .HasColumnType("int");
@@ -223,7 +231,8 @@ namespace ApiBase.Migrations
 
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasComputedColumnSql("getdate()");
 
                     b.Property<int>("Usuario_Id")
                         .HasColumnType("int");
@@ -253,7 +262,8 @@ namespace ApiBase.Migrations
 
                     b.Property<DateTime?>("CreatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
 
                     b.Property<string>("Nome")
                         .IsRequired()
@@ -272,7 +282,8 @@ namespace ApiBase.Migrations
 
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasComputedColumnSql("getdate()");
 
                     b.HasKey("Instituicao_Id");
 
@@ -300,7 +311,8 @@ namespace ApiBase.Migrations
 
                     b.Property<DateTime?>("CreatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
 
                     b.Property<string>("Descricao")
                         .IsRequired()
@@ -315,7 +327,8 @@ namespace ApiBase.Migrations
 
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasComputedColumnSql("getdate()");
 
                     b.HasKey("Solicitacao_Id");
 
@@ -335,7 +348,8 @@ namespace ApiBase.Migrations
 
                     b.Property<DateTime?>("CreatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
 
                     b.Property<string>("Nome")
                         .IsRequired()
@@ -344,7 +358,8 @@ namespace ApiBase.Migrations
 
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasComputedColumnSql("getdate()");
 
                     b.HasKey("Tipo_Conta_Id");
 
@@ -367,7 +382,8 @@ namespace ApiBase.Migrations
 
                     b.Property<DateTime?>("CreatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
 
                     b.Property<string>("Nome")
                         .IsRequired()
@@ -379,14 +395,14 @@ namespace ApiBase.Migrations
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)")
-                        .HasDefaultValue("Brasil");
+                        .HasDefaultValueSql("'Brasil'");
 
                     b.Property<string>("PlusCode")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)")
-                        .HasDefaultValue("RM88+4G Plano Diretor Sul, Palmas - State of Tocantins");
+                        .HasDefaultValueSql("'RM88+4G Plano Diretor Sul, Palmas - State of Tocantins'");
 
                     b.Property<int>("Tipo_Conta_Id")
                         .ValueGeneratedOnAdd()
@@ -395,7 +411,8 @@ namespace ApiBase.Migrations
 
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasComputedColumnSql("getdate()");
 
                     b.HasKey("Usuario_Id");
 

@@ -1,6 +1,5 @@
 ﻿using ApiBase.Contracts.Instituicao;
 using ApiBase.Dtos;
-using ApiBase.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -16,16 +15,23 @@ namespace ApiBase.Controllers.Instituicao
 
         // Retorna os cursos da instituição 
         [HttpGet]
-        public async Task<IEnumerable<CursoDto>> Get()
+        public async Task<ActionResult<IEnumerable<CursoDto>>> Get()
         {
-            return await _repository.Get(int.Parse(User.Claims.First(x => x.Type == "userId").Value));
+            IEnumerable<CursoDto> curso = await _repository.Get(int.Parse(User.Claims.First(x => x.Type == "userId").Value));
+
+            if (!curso.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(curso);
         }
 
         // Inserir informações de um curso
         [HttpPost]
         public async Task<IActionResult> Post(CursoDto curso)
         {
-            if (await _repository.Put(curso, int.Parse(User.Claims.First(x => x.Type == "userId").Value)))
+            if (await _repository.Post(curso, int.Parse(User.Claims.First(x => x.Type == "userId").Value)))
             {
                 return Created();
             }

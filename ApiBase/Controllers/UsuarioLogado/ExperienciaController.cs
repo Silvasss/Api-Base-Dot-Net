@@ -1,6 +1,5 @@
 ﻿using ApiBase.Contracts.UsuarioLogado;
 using ApiBase.Dtos;
-using ApiBase.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -14,12 +13,25 @@ namespace ApiBase.Controllers.UsuarioLogado
     {
         private readonly IExperienciaRepository _repository = repository;
 
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<ExperienciaDto>>> GetAll()
+        {
+            IEnumerable<ExperienciaDto> experiencias = await _repository.GetAll(int.Parse(User.Claims.First(x => x.Type == "userId").Value));
+
+            if (!experiencias.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(experiencias);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Post(ExperienciaDto experiencia)
         {
             if (await _repository.Post(experiencia, int.Parse(User.Claims.First(x => x.Type == "userId").Value)))
             {
-                return Ok();
+                return Created();
             }
 
             return new ContentResult
@@ -35,7 +47,7 @@ namespace ApiBase.Controllers.UsuarioLogado
         {
             if (await _repository.Put(experiencia, int.Parse(User.Claims.First(x => x.Type == "userId").Value)))
             {
-                return Ok();
+                return NoContent();
             }
 
             return new ContentResult

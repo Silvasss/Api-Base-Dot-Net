@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ApiBase.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitalCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,7 +19,7 @@ namespace ApiBase.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Tipo = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     Descricao = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getdate()"),
                     Auth_Usuario = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
@@ -36,8 +36,8 @@ namespace ApiBase.Migrations
                     Usuario = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false),
                     PasswordHash = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
                     PasswordSalt = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "getdate()"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, computedColumnSql: "getdate()")
                 },
                 constraints: table =>
                 {
@@ -51,8 +51,8 @@ namespace ApiBase.Migrations
                     Tipo_Conta_Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Nome = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "getdate()"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, computedColumnSql: "getdate()")
                 },
                 constraints: table =>
                 {
@@ -68,8 +68,8 @@ namespace ApiBase.Migrations
                     Nome = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     PlusCode = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
                     Ativo = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "getdate()"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, computedColumnSql: "getdate()"),
                     Auth_Id = table.Column<int>(type: "int", nullable: false),
                     Tipo_Conta_Id = table.Column<int>(type: "int", nullable: false, defaultValue: 2)
                 },
@@ -91,10 +91,10 @@ namespace ApiBase.Migrations
                     Usuario_Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Nome = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Pais = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, defaultValue: "Brasil"),
-                    PlusCode = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false, defaultValue: "RM88+4G Plano Diretor Sul, Palmas - State of Tocantins"),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Pais = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, defaultValueSql: "'Brasil'"),
+                    PlusCode = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false, defaultValueSql: "'RM88+4G Plano Diretor Sul, Palmas - State of Tocantins'"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "getdate()"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, computedColumnSql: "getdate()"),
                     Auth_Id = table.Column<int>(type: "int", nullable: false),
                     Tipo_Conta_Id = table.Column<int>(type: "int", nullable: false, defaultValue: 2)
                 },
@@ -117,8 +117,8 @@ namespace ApiBase.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Nome = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Ativo = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "getdate()"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, computedColumnSql: "getdate()"),
                     Instituicao_Id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -145,8 +145,8 @@ namespace ApiBase.Migrations
                     Ativo = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     Inicio = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Fim = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "getdate()"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, computedColumnSql: "getdate()"),
                     Usuario_Id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -170,8 +170,8 @@ namespace ApiBase.Migrations
                     Curso_Id = table.Column<int>(type: "int", nullable: false),
                     Inicio = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Fim = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "getdate()"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, computedColumnSql: "getdate()"),
                     Usuario_Id = table.Column<int>(type: "int", nullable: false),
                     InstituicaoId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -195,8 +195,8 @@ namespace ApiBase.Migrations
                     Descricao = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Instituicao_Id = table.Column<int>(type: "int", nullable: false),
                     Ativo = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "getdate()"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, computedColumnSql: "getdate()"),
                     Graduacao_Id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>

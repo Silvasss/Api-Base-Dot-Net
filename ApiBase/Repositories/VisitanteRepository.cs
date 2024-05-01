@@ -4,22 +4,35 @@ using ApiBase.Dtos;
 using ApiBase.Models;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace ApiBase.Repositories
 {
     public class VisitanteRepository(IConfiguration config) : IVisitanteRepository
     {
         private readonly DataContextEF _entityFramework = new(config);
-        private readonly Mapper _mapper = new(new MapperConfiguration(cfg => { cfg.CreateMap<Curso, CursoDto>().ReverseMap(); }));
-
-        public async Task<UsuarioDto> All(int userId)
+        private readonly Mapper _mapper = new(new MapperConfiguration(cfg =>
         {
-            return _mapper.Map<UsuarioDto>(await _entityFramework.Usuarios.Where(u => u.Usuario_Id == userId && u.Tipo_Conta_Id == 2).FirstAsync());
+            cfg.CreateMap<Usuario, UsuarioDto>().ReverseMap();
+            cfg.CreateMap<Usuario, VisitanteDto>().ReverseMap();
+            cfg.CreateMap<Experiencia, ExperienciaDto>().ReverseMap();
+            cfg.CreateMap<Graduacao, GraduacaoDto>().ReverseMap();
+        }));
+
+        public async Task<VisitanteDto> Get(int userId)
+        {
+            VisitanteDto visitanteDb = _mapper.Map<VisitanteDto>(await _entityFramework.Usuarios.Where(u => u.Usuario_Id == userId && u.Tipo_Conta_Id == 2).FirstOrDefaultAsync());
+
+            visitanteDb.Experiencias = _mapper.Map<IEnumerable<ExperienciaDto>>(await _entityFramework.Experiencia.Where(u => u.Usuario_Id == userId).ToListAsync());
+
+            visitanteDb.Graduacoes = _mapper.Map<IEnumerable<GraduacaoDto>>(await _entityFramework.Graduacaos.Where(u => u.Usuario_Id == userId).ToListAsync());
+
+            return visitanteDb;
         }
 
         public async Task<IEnumerable<UsuarioDto>> Index()
         {
-            return (IEnumerable<UsuarioDto>)_mapper.Map<UsuarioDto>(await _entityFramework.Usuarios.Where(u => u.Tipo_Conta_Id == 2).ToListAsync());
+            return _mapper.Map<IEnumerable<UsuarioDto>>(await _entityFramework.Usuarios.Where(u => u.Tipo_Conta_Id == 2).ToListAsync());
         }
     }
 }

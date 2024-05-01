@@ -3,6 +3,7 @@ using ApiBase.Dtos;
 using ApiBase.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Net;
 
 namespace ApiBase.Controllers.Administrado
@@ -16,9 +17,16 @@ namespace ApiBase.Controllers.Administrado
 
         // Retorna os logs de alterações de contas da tabelas 'AuditLogs'
         [HttpGet]
-        public Task<IEnumerable<AuditLogs>> Index()
+        public async Task<ActionResult<IEnumerable<AuditLogs>>> Index()
         {
-            return _repository.Get();
+            IEnumerable<AuditLogs> logs = await _repository.Get();
+
+            if (!logs.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(logs);
         }
 
         // Para inserir uma conta do tipo 'instituição'

@@ -17,11 +17,17 @@ namespace ApiBase.Repositories.Admin
 
         public async Task<bool> Delete(int userId)
         {
-            Auth authDb = await _entityFramework.Auth.Where(a => a.Instituicao.Instituicao_Id == userId).FirstAsync();
+            Auth? authDb = await _entityFramework.Auth.Where(a => a.Instituicao.Instituicao_Id == userId)
+                .Include(a => a.Instituicao)
+                .ThenInclude(c => c.Cursos)
+                .FirstOrDefaultAsync();
 
             if (authDb != null)
             {
-                string logDescricao = JsonConvert.SerializeObject(authDb);
+                string logDescricao = JsonConvert.SerializeObject(authDb, new JsonSerializerSettings()
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                });
 
                 AuditLogs auditLogs = new()
                 {
@@ -62,7 +68,7 @@ namespace ApiBase.Repositories.Admin
 
             byte[] passwordHash = _authHelper.GetPasswordHash(instituicaoInsert.Password, passwordSalt);
 
-            if ((await _entityFramework.Auth.Where(a => a.Usuario == instituicaoInsert.Usuario).FirstAsync()) == null)
+            if ((await _entityFramework.Auth.Where(a => a.Usuario == instituicaoInsert.Usuario).FirstOrDefaultAsync()) == null)
             {
                 Auth novoAuth = new()
                 {
@@ -93,7 +99,7 @@ namespace ApiBase.Repositories.Admin
 
         public async Task<bool> Put(int userId, int roleId)
         {
-            Usuario usuarioDb = await _entityFramework.Usuarios.Where(u => u.Auth_Id == userId).FirstAsync();
+            Usuario? usuarioDb = await _entityFramework.Usuarios.Where(u => u.Auth_Id == userId).FirstOrDefaultAsync();
 
             if (usuarioDb != null)
             {

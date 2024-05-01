@@ -68,7 +68,7 @@ namespace ApiBase.Helpers
 
             byte[] passwordHash = GetPasswordHash(userForSetPassword.Password, passwordSalt);
 
-            if ((await _entityFramework.Auth.Where(a => a.Usuario == userForSetPassword.Usuario).FirstAsync()) == null)
+            if (await _entityFramework.Auth.Where(a => a.Usuario == userForSetPassword.Usuario).FirstOrDefaultAsync() == null)
             {
                 Auth novoAuth = new()
                 {
@@ -80,7 +80,9 @@ namespace ApiBase.Helpers
                 Usuario novoUsuario = new()
                 {
                     Nome = userForSetPassword.Usuario,
-                    Tipo_Conta_Id = 2 // Tipo usuário
+                    Tipo_Conta_Id = 2, // Tipo usuário
+                    Pais = "Brasil",
+                    PlusCode  = "RM88+4G Plano Diretor Sul, Palmas - State of Tocantins"
                 };
 
                 novoAuth.UsuarioPerfil = novoUsuario;

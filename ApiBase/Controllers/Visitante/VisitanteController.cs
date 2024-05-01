@@ -1,6 +1,5 @@
 ﻿using ApiBase.Contracts;
 using ApiBase.Dtos;
-using ApiBase.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiBase.Controllers.Visitante
@@ -13,15 +12,29 @@ namespace ApiBase.Controllers.Visitante
 
         // Retorna todos os usuários
         [HttpGet]
-        public async Task<IEnumerable<UsuarioDto>> Index()
+        public async Task<ActionResult<IEnumerable<UsuarioDto>>> Index()
         {
-            return await _repository.Index();
+            IEnumerable<UsuarioDto> usuarios = await _repository.Index();
+
+            if (!usuarios.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(usuarios);
         }
 
         [HttpGet("{userId}")]
-        public async Task<UsuarioDto> All(int userId)
+        public async Task<ActionResult<VisitanteDto>> Get(int userId)
         {
-            return await _repository.All(userId);
+            VisitanteDto visitanteRetorno = await _repository.Get(userId);
+
+            if (visitanteRetorno == null)
+            {
+                return NotFound();
+            }
+
+            return await _repository.Get(userId);
         }
     }
 }

@@ -6,6 +6,6 @@ namespace ApiBase.Contracts
     public interface IVisitanteRepository
     {
         Task<IEnumerable<UsuarioDto>> Index();
-        Task<UsuarioDto> All(int userId);
+        Task<VisitanteDto> Get(int userId);
     }
 }

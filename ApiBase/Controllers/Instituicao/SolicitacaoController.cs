@@ -3,6 +3,7 @@ using ApiBase.Dtos;
 using ApiBase.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Net;
 
 namespace ApiBase.Controllers.Instituicao
@@ -16,9 +17,16 @@ namespace ApiBase.Controllers.Instituicao
 
         // Retorna as solicitações
         [HttpGet]
-        public async Task<IEnumerable<SolicitacaoDto>> Get()
+        public async Task<ActionResult<IEnumerable<SolicitacaoDto>>> Get()
         {
-            return await _repository.Get(int.Parse(User.Claims.First(x => x.Type == "userId").Value));
+            IEnumerable<SolicitacaoDto> solicitacoes = await _repository.Get(int.Parse(User.Claims.First(x => x.Type == "userId").Value));
+
+            if (!solicitacoes.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(solicitacoes);
         }
 
         [HttpGet("{id}")]

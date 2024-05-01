@@ -107,11 +107,30 @@
             }
         ]
     },
-    "Experiencia": {
-        "setor": "Tecnologia",
-        "empresa": "Solucao Ti Assist Tec Em Informatica",
-        "situacao": "Trabalhando",
-        "tipo": "Integral",
-        "plusCode": "RM9C+HG Plano Diretor Norte, Palmas - State of Tocantins"
-    }
+    "Usuario": {
+        "login": "string",
+        "senha": "string",
+        "Experiencia": {
+            "setor": "Tecnologia",
+            "empresa": "Solucao Ti Assist Tec Em Informatica",
+            "situacao": "Trabalhando",
+            "tipo": "Integral",
+            "plusCode": "RM9C+HG Plano Diretor Norte, Palmas - State of Tocantins"
+        }
+    },
+    "Admin": {
+        "login": "admin",
+        "senha": "string"
+    },
+    "Instituição": {
+        "login": "luteranoPalmas",
+        "senha": "string",
+        "plusCode": "PMC8+G4 Plano Diretor Expansão Sul, Palmas - State of Tocantins",
+        "Curso": [
+            {
+                "nome": "Agronomia",
+                "duracao": 10
+            }
+        ]
+    }    
 }

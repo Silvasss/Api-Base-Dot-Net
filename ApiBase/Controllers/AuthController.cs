@@ -43,13 +43,13 @@ namespace ApiBase.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserForLoginDto userForLogin)
         {
-            Auth? dadosLogin = await _entityFramework.Auth.Where(a => a.Usuario == userForLogin.Usuario).FirstAsync<Auth>();
-                                
+            Auth? dadosLogin = await _entityFramework.Auth.Where(a => a.Usuario == userForLogin.Usuario).Include("UsuarioPerfil").FirstOrDefaultAsync();
+
             if (dadosLogin == null)
             {
                 return StatusCode(StatusCodes.Status400BadRequest, "Credenciais inválidas");
             }
-            
+
             byte[] passwordHash = _authHelper.GetPasswordHash(userForLogin.Password, dadosLogin.PasswordSalt);
 
             for (int index = 0; index < passwordHash.Length; index++)
@@ -60,10 +60,37 @@ namespace ApiBase.Controllers
                 }
             }
 
-            TipoConta politicaConta = await _entityFramework.TipoContas.Where(t => t.Tipo_Conta_Id == dadosLogin.UsuarioPerfil.Tipo_Conta_Id).FirstAsync();
+            TipoConta politicaConta = await _entityFramework.TipoContas.FindAsync(dadosLogin.UsuarioPerfil.Tipo_Conta_Id);
 
             return Ok(new Dictionary<string, string> {
                 {"token", _authHelper.CreateToken(dadosLogin.UsuarioPerfil.Usuario_Id, politicaConta.Nome, userForLogin.Usuario)}
+            });
+        }
+
+        [HttpPost("login2")]
+        public async Task<IActionResult> Login2(UserForLoginDto userForLogin)
+        {
+            Auth? dadosLogin = await _entityFramework.Auth.Where(a => a.Usuario == userForLogin.Usuario).Include("Instituicao").FirstOrDefaultAsync();
+
+            if (dadosLogin == null)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, "Credenciais inválidas");
+            }
+
+            byte[] passwordHash = _authHelper.GetPasswordHash(userForLogin.Password, dadosLogin.PasswordSalt);
+
+            for (int index = 0; index < passwordHash.Length; index++)
+            {
+                if (passwordHash[index] != dadosLogin.PasswordHash[index])
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, "Credenciais inválidas");
+                }
+            }
+
+            TipoConta politicaConta = await _entityFramework.TipoContas.FindAsync(dadosLogin.Instituicao.Tipo_Conta_Id);
+
+            return Ok(new Dictionary<string, string> {
+                {"token", _authHelper.CreateToken(dadosLogin.Instituicao.Instituicao_Id, politicaConta.Nome, userForLogin.Usuario)}
             });
         }
     }

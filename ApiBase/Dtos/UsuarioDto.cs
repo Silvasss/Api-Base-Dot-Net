@@ -17,6 +17,22 @@ namespace ApiBase.Dtos
         [Required(ErrorMessage = "PlusCode é obrigatório")]
         [StringLength(150, ErrorMessage = "Tamanho entre 4 a 150 caracteres", MinimumLength = 4)]
         public string PlusCode { get; set; } = string.Empty;
+    }
+    public class VisitanteDto
+    {
+        public int Usuario_Id { get; set; }
+
+        [Required(ErrorMessage = "Nome é obrigatório")]
+        [StringLength(50, ErrorMessage = "Tamanho entre 4 a 50 caracteres", MinimumLength = 4)]
+        public string Nome { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "País é obrigatório")]
+        [StringLength(50, ErrorMessage = "Tamanho entre 4 a 50 caracteres", MinimumLength = 4)]
+        public string Pais { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "PlusCode é obrigatório")]
+        [StringLength(150, ErrorMessage = "Tamanho entre 4 a 150 caracteres", MinimumLength = 4)]
+        public string PlusCode { get; set; } = string.Empty;
         public IEnumerable<ExperienciaDto>? Experiencias { get; set; }
         public IEnumerable<GraduacaoDto>? Graduacoes { get; set; }
     }

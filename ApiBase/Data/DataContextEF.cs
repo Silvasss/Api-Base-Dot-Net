@@ -27,21 +27,21 @@ namespace ApiBase.Data
             // Log de alteração
             modelBuilder.Entity<AuditLogs>().HasKey(a => a.AuditLog_Id);
             modelBuilder.Entity<AuditLogs>().Property(a => a.Tipo).HasMaxLength(10).IsRequired();
-            modelBuilder.Entity<AuditLogs>().Property(a => a.Descricao).HasMaxLength(50).IsRequired();
+            modelBuilder.Entity<AuditLogs>().Property(a => a.Descricao).IsRequired();
             modelBuilder.Entity<AuditLogs>().Property(a => a.CreatedDate).HasDefaultValueSql("getdate()");
             modelBuilder.Entity<AuditLogs>().Property(a => a.Auth_Usuario).HasMaxLength(50).IsRequired();
 
             // Tipo da conta
             modelBuilder.Entity<TipoConta>().HasKey(t => t.Tipo_Conta_Id);
             modelBuilder.Entity<TipoConta>().Property(t => t.Nome).HasMaxLength(15).IsRequired();
-            modelBuilder.Entity<TipoConta>().HasIndex(t => t.Nome).IsUnique();
+            modelBuilder.Entity<TipoConta>().HasIndex(t => t.Nome).IsUnique(true);
             modelBuilder.Entity<TipoConta>().Property(t => t.CreatedAt).HasDefaultValueSql("getdate()");
             modelBuilder.Entity<TipoConta>().Property(t => t.UpdatedAt).HasComputedColumnSql("getdate()").ValueGeneratedOnAddOrUpdate();
 
             // Autenticação
             modelBuilder.Entity<Auth>().HasKey(a => a.Auth_id);
             modelBuilder.Entity<Auth>().Property(a => a.Usuario).HasMaxLength(32).IsRequired();
-            modelBuilder.Entity<Auth>().HasIndex(a => a.Usuario).IsUnique();
+            modelBuilder.Entity<Auth>().HasIndex(a => a.Usuario).IsUnique(true);
             modelBuilder.Entity<Auth>().Property(a => a.PasswordHash).IsRequired();
             modelBuilder.Entity<Auth>().Property(a => a.PasswordSalt).IsRequired();
             modelBuilder.Entity<Auth>().Property(a => a.CreatedAt).HasDefaultValueSql("getdate()");
@@ -50,18 +50,18 @@ namespace ApiBase.Data
             // Instituição
             modelBuilder.Entity<InstituicaoEF>().HasKey(b => b.Instituicao_Id);
             modelBuilder.Entity<InstituicaoEF>().Property(a => a.Nome).HasMaxLength(100).IsRequired();
-            modelBuilder.Entity<InstituicaoEF>().HasIndex(a => a.Nome).IsUnique();
+            modelBuilder.Entity<InstituicaoEF>().HasIndex(a => a.Nome).IsUnique(true);
             modelBuilder.Entity<InstituicaoEF>().Property(a => a.PlusCode).HasMaxLength(150).IsRequired();
             modelBuilder.Entity<InstituicaoEF>().Property(a => a.Ativo).HasDefaultValue(true);
             modelBuilder.Entity<InstituicaoEF>().Property(a => a.CreatedAt).HasDefaultValueSql("getdate()");
             modelBuilder.Entity<InstituicaoEF>().Property(a => a.UpdatedAt).HasComputedColumnSql("getdate()").ValueGeneratedOnAddOrUpdate();
             modelBuilder.Entity<InstituicaoEF>().Property(a => a.Tipo_Conta_Id).HasDefaultValue(2);
             modelBuilder.Entity<InstituicaoEF>().HasOne<Auth>(a => a.Auth).WithOne(e => e.Instituicao).HasForeignKey<InstituicaoEF>(i => i.Auth_Id).IsRequired();
-
+            
             // Curso da instituição
             modelBuilder.Entity<Curso>().HasKey(c => c.Curso_Id);
             modelBuilder.Entity<Curso>().Property(c => c.Nome).HasMaxLength(50).IsRequired();
-            modelBuilder.Entity<Curso>().HasIndex(c => c.Nome).IsUnique();
+            modelBuilder.Entity<Curso>().HasIndex(c => c.Nome).IsUnique(true);
             modelBuilder.Entity<Curso>().Property(c => c.Ativo).HasDefaultValue(true);
             modelBuilder.Entity<Curso>().Property(c => c.CreatedAt).HasDefaultValueSql("getdate()");
             modelBuilder.Entity<Curso>().Property(c => c.UpdatedAt).HasComputedColumnSql("getdate()").ValueGeneratedOnAddOrUpdate();

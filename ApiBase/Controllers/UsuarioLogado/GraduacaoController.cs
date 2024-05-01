@@ -3,6 +3,7 @@ using ApiBase.Dtos;
 using ApiBase.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Net;
 
 namespace ApiBase.Controllers.UsuarioLogado
@@ -14,12 +15,25 @@ namespace ApiBase.Controllers.UsuarioLogado
     {
         private readonly IGraduacaoRepository _repository = repository;
 
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<GraduacaoDto>>> Get()
+        {
+            IEnumerable<GraduacaoDto> graduacoes = await _repository.GetAll(int.Parse(User.Claims.First(x => x.Type == "userId").Value));
+
+            if (!graduacoes.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(graduacoes);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Post(GraduacaoDto graduacao)
         {
             if (await _repository.Post(graduacao, int.Parse(User.Claims.First(x => x.Type == "userId").Value)))
             {
-                return NoContent();
+                return Created();
             }
 
             return new ContentResult

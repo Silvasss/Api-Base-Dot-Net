@@ -1,4 +1,6 @@
-﻿namespace ApiBase.Models
+﻿using Newtonsoft.Json;
+
+namespace ApiBase.Models
 {
     public partial class Auth
     {

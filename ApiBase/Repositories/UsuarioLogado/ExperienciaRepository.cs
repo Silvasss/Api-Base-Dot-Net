@@ -2,6 +2,7 @@
 using ApiBase.Data;
 using ApiBase.Dtos;
 using ApiBase.Models;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 
@@ -10,6 +11,12 @@ namespace ApiBase.Repositories.UsuarioLogado
     public class ExperienciaRepository(IConfiguration config) : IExperienciaRepository
     {
         private readonly DataContextEF _entityFramework = new(config);
+        private readonly Mapper _mapper = new(new MapperConfiguration(cfg => { cfg.CreateMap<Experiencia, ExperienciaDto>().ReverseMap(); }));
+    
+        public async Task<IEnumerable<ExperienciaDto>> GetAll(int userId)
+        {
+            return _mapper.Map<IEnumerable<ExperienciaDto>>(await _entityFramework.Experiencia.Where(u => u.Usuario_Id == userId).ToListAsync());
+        }
 
         public async Task<bool> Delete(int id, int Experienciaid)
         {

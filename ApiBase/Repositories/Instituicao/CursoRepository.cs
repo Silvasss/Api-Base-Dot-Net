@@ -32,7 +32,7 @@ namespace ApiBase.Repositories.Instituicao
 
         public async Task<IEnumerable<CursoDto>> Get(int id)
         {
-            return (IEnumerable<CursoDto>)_mapper.Map<CursoDto>(await _entityFramework.Curso.Where(c => c.Instituicao_Id == id).ToListAsync());
+            return _mapper.Map<IEnumerable<CursoDto>>(await _entityFramework.Curso.Where(c => c.Instituicao_Id == id).ToListAsync());
         }
 
         public async Task<bool> Post(CursoDto curso, int id)
@@ -59,8 +59,8 @@ namespace ApiBase.Repositories.Instituicao
 
             if (cursoDb != null)
             {
-                cursoDb.Nome = cursoDb.Nome;
-                cursoDb.Ativo = cursoDb.Ativo;
+                cursoDb.Nome = curso.Nome;
+                cursoDb.Ativo = curso.Ativo;
 
                 if (await _entityFramework.SaveChangesAsync() > 0)
                 {
