@@ -55,24 +55,5 @@ namespace ApiBase.Controllers.Instituicao
 
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
-
-        /// <summary>
-        /// Criar uma solicitiação para apagar a conta
-        /// </summary>
-        /// <response code="204">Instituição atualizada</response>
-        /// <response code="500">Error interno do servidor</response>
-        [HttpDelete]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [ProducesDefaultResponseType]
-        public async Task<IActionResult> Delete()
-        {
-            if (await _repository.Delete(int.Parse(User.Claims.First(x => x.Type == "userId").Value)))
-            {
-                return NoContent();
-            }
-
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
     }
 }

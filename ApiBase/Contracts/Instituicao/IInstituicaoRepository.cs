@@ -7,6 +7,5 @@ namespace ApiBase.Contracts.Instituicao
     {
         Task<InstituicaoDto> Get(int userId);
         Task<bool> Put(InstituicaoDto instituicao, int id);
-        Task<bool> Delete(int id);
     }
 }

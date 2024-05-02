@@ -18,23 +18,6 @@ namespace ApiBase.Repositories.Instituicao
             return _mapper.Map<InstituicaoDto>(await _entityFramework.Instituicao.Where(i => i.Instituicao_Id == userId).FirstAsync());
         }
 
-        public async Task<bool> Delete(int id)
-        {
-            InstituicaoEF instituicaoDb = await _entityFramework.Instituicao.Where(i => i.Instituicao_Id == id).FirstAsync();
-
-            if (instituicaoDb != null)
-            {
-                instituicaoDb.Ativo = false;
-
-                if (await _entityFramework.SaveChangesAsync() > 0)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
         public async Task<bool> Put(InstituicaoDto instituicao, int id)
         {
             InstituicaoEF instituicaoDb = await _entityFramework.Instituicao.Where(i => i.Instituicao_Id == id).FirstAsync();
