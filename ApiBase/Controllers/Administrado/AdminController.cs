@@ -3,20 +3,27 @@ using ApiBase.Dtos;
 using ApiBase.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Net;
 
 namespace ApiBase.Controllers.Administrado
 {
     [Authorize(Policy = "AdminOnly")]
     [Route("admin")]
+    [ApiConventionType(typeof(DefaultApiConventions))]
     [ApiController]
+    [Produces("application/json")]
     public class AdminController(IAdminRepository repository) : ControllerBase
     {
         private readonly IAdminRepository _repository = repository;
 
-        // Retorna os logs de alterações de contas da tabelas 'AuditLogs'
+        /// <summary>
+        /// Retorna lista com os logs de alterações
+        /// </summary>
+        /// <response code="200">Lista de objetos Log</response>
+        /// <response code="404">Nenhum objeto Log encontrado</response>
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
         public async Task<ActionResult<IEnumerable<AuditLogs>>> Index()
         {
             IEnumerable<AuditLogs> logs = await _repository.Get();
@@ -29,25 +36,47 @@ namespace ApiBase.Controllers.Administrado
             return Ok(logs);
         }
 
-        // Para inserir uma conta do tipo 'instituição'
+        /// <summary>
+        /// Criar uma conta do tipo 'instituição'
+        /// </summary>
+        /// <remarks>              
+        /// Exemplo de request:        
+        /// 
+        ///     {
+        ///         "Usuario": "NomeDaInstituição",
+        ///         "Password": "SenhaDaInstituição"
+        ///     } 
+        /// Os Plus Codes funcionam como endereços físicos. São baseados em latitude e longitude e usam um 
+        /// sistema de grade simples e um conjunto de 20 caracteres alfanuméricos.  
+        /// </remarks>
+        /// <param name="instituicaoInsert">Objeto Instituição</param>
+        /// <response code="201">Criada nova instituição</response>
+        /// <response code="400">Falha na validação da entrada</response>
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesDefaultResponseType]
         public async Task<IActionResult> Post(InstituicaoDtoCreate instituicaoInsert)
         {
             if (await _repository.Post(instituicaoInsert))
             {
-                return NoContent();
+                return Created();
             }
 
-            return new ContentResult
-            {
-                StatusCode = (int)HttpStatusCode.BadRequest,
-                Content = "Falha ao atualizar!",
-                ContentType = "text/plain"
-            };
+            return BadRequest();
         }
 
-        // Alterar o nivel de um usuário
+        /// <summary>
+        /// Alterar o nível de um usuário
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="roleId"></param>
+        /// <response code="204">Nível do usuário atualizado</response>
+        /// <response code="404">Usuário não encontrado</response>
         [HttpPut("{userId}&{roleId}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
         public async Task<IActionResult> Put(int userId, int roleId)
         {
             if (await _repository.Put(userId, roleId))
@@ -55,16 +84,19 @@ namespace ApiBase.Controllers.Administrado
                 return NoContent();
             }
 
-            return new ContentResult
-            {
-                StatusCode = (int)HttpStatusCode.BadRequest,
-                Content = "Falha ao atualizar!",
-                ContentType = "text/plain"
-            };
+            return NotFound();
         }
 
-        // Excluir uma conta
+        /// <summary>
+        /// Excluir uma conta
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <response code="204">Usuário apagado</response>
+        /// <response code="404">Usuário não encontrado</response>
         [HttpDelete("/usuario/{userId}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
         public async Task<IActionResult> Delete(int userId)
         {
             if (await _repository.Delete(userId))
@@ -72,12 +104,7 @@ namespace ApiBase.Controllers.Administrado
                 return NoContent();
             }
 
-            return new ContentResult
-            {
-                StatusCode = (int)HttpStatusCode.BadRequest,
-                Content = "Falha na solicitação!",
-                ContentType = "text/plain"
-            };
+            return NotFound();
         }
     }
 }

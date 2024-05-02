@@ -1,22 +1,28 @@
 ﻿using ApiBase.Contracts.Instituicao;
 using ApiBase.Dtos;
-using ApiBase.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Net;
 
 namespace ApiBase.Controllers.Instituicao
 {
     [Authorize(Policy = "InstituicaoOnly")]
     [Route("instituicao/solicitacao")]
+    [ApiConventionType(typeof(DefaultApiConventions))]
     [ApiController]
+    [Produces("application/json")]
     public class SolicitacaoController(ISoliciticacoesRepository repository) : ControllerBase
     {
         private readonly ISoliciticacoesRepository _repository = repository;
 
-        // Retorna as solicitações
+        /// <summary>
+        /// Retorna lista de solicitações de graduações que não foram validadas
+        /// </summary>
+        /// <response code="200">Lista de objetos Solicitação</response>
+        /// <response code="404">Nenhum objeto Solicitação encontrado</response>
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
         public async Task<ActionResult<IEnumerable<SolicitacaoDto>>> Get()
         {
             IEnumerable<SolicitacaoDto> solicitacoes = await _repository.Get(int.Parse(User.Claims.First(x => x.Type == "userId").Value));
@@ -29,14 +35,39 @@ namespace ApiBase.Controllers.Instituicao
             return Ok(solicitacoes);
         }
 
+        /// <summary>
+        /// Retorna uma solicitação
+        /// </summary>
+        /// <param name="id"></param>
+        /// <response code="200">Solicitação</response>
         [HttpGet("{id}")]
         public async Task<ActionResult<SolicitacaoDto>> Get(int id)
         {
-            return await _repository.GetSolicitacao(id, int.Parse(User.Claims.First(x => x.Type == "userId").Value));
+            // -- Alterar código para retorna NotFound() --
+            // --------------------------------------------
+
+            return Ok(await _repository.GetSolicitacao(id, int.Parse(User.Claims.First(x => x.Type == "userId").Value)));
         }
 
-        // Para atualizar informações de uma solicitação de um usuário
+        /// <summary>
+        /// Atualizar uma solicitação
+        /// </summary>
+        /// <remarks>              
+        /// Exemplo de request:        
+        /// 
+        ///     {
+        ///         "Solicitacao_Id": 1,
+        ///         "Descricao": "DescriçãoDaSolicitação",
+        ///         "Ativo": false
+        ///     }  
+        /// </remarks>
+        /// <param name="solicitaCurso">Objeto Solicitação</param>
+        /// <response code="204">Solicitação atualizada</response>
+        /// <response code="404">Solicitação não encotrada</response>
         [HttpPut]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
         public async Task<IActionResult> Put(SolicitacaoDto solicitaCurso)
         {
             if (await _repository.Put(solicitaCurso, int.Parse(User.Claims.First(x => x.Type == "userId").Value)))
@@ -44,12 +75,7 @@ namespace ApiBase.Controllers.Instituicao
                 return NoContent();
             }
 
-            return new ContentResult
-            {
-                StatusCode = (int)HttpStatusCode.BadRequest,
-                Content = "Falha na experiência!",
-                ContentType = "text/plain"
-            };
+            return NotFound();
         }
     }
 }
