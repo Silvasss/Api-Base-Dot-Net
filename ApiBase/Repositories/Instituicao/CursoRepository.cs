@@ -15,7 +15,7 @@ namespace ApiBase.Repositories.Instituicao
 
         public async Task<bool> Delete(int cursoId, int id)
         {
-            Curso? cursoDb = await _entityFramework.Curso.Where(c => c.Curso_Id == cursoId && c.Instituicao_Id == id).FirstAsync();
+            Curso? cursoDb = await _entityFramework.Curso.Where(c => c.Curso_Id == cursoId && c.Instituicao_Id == id).FirstOrDefaultAsync();
 
             if (cursoDb != null)
             {
@@ -45,17 +45,14 @@ namespace ApiBase.Repositories.Instituicao
 
             await _entityFramework.AddAsync(cursoDb);
 
-            if (await _entityFramework.SaveChangesAsync() > 0)
-            {
-                return true;
-            }
+            await _entityFramework.SaveChangesAsync();
 
-            return false;
+            return true;
         }
 
         public async Task<bool> Put(CursoDto curso, int id)
         {
-            Curso? cursoDb = await _entityFramework.Curso.Where(c => c.Curso_Id == curso.Curso_Id && c.Instituicao_Id == id).FirstAsync();
+            Curso? cursoDb = await _entityFramework.Curso.Where(c => c.Curso_Id == curso.Curso_Id && c.Instituicao_Id == id).FirstOrDefaultAsync();
 
             if (cursoDb != null)
             {

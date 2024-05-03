@@ -19,7 +19,7 @@ namespace ApiBase.Controllers.Administrado
         /// Retorna lista com os logs de alterações
         /// </summary>
         /// <response code="200">Lista de objetos Log</response>
-        /// <response code="404">Nenhum objeto Log encontrado</response>
+        /// <response code="404">Nenhum encontrado</response>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -50,8 +50,8 @@ namespace ApiBase.Controllers.Administrado
         /// sistema de grade simples e um conjunto de 20 caracteres alfanuméricos.  
         /// </remarks>
         /// <param name="instituicaoInsert">Objeto Instituição</param>
-        /// <response code="201">Criada nova instituição</response>
-        /// <response code="400">Falha na validação da entrada</response>
+        /// <response code="201">Criada</response>
+        /// <response code="400">Falha na validação da autenticação</response>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -71,8 +71,8 @@ namespace ApiBase.Controllers.Administrado
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="roleId"></param>
-        /// <response code="204">Nível do usuário atualizado</response>
-        /// <response code="404">Usuário não encontrado</response>
+        /// <response code="204">Atualizado</response>
+        /// <response code="404">Não encontrado</response>
         [HttpPut("{userId}&{roleId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -91,8 +91,8 @@ namespace ApiBase.Controllers.Administrado
         /// Excluir uma conta
         /// </summary>
         /// <param name="userId"></param>
-        /// <response code="204">Usuário apagado</response>
-        /// <response code="404">Usuário não encontrado</response>
+        /// <response code="204">Apagado</response>
+        /// <response code="404">Não encontrado</response>
         [HttpDelete("/usuario/{userId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

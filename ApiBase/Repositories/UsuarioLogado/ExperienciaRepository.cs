@@ -12,7 +12,7 @@ namespace ApiBase.Repositories.UsuarioLogado
     {
         private readonly DataContextEF _entityFramework = new(config);
         private readonly Mapper _mapper = new(new MapperConfiguration(cfg => { cfg.CreateMap<Experiencia, ExperienciaDto>().ReverseMap(); }));
-    
+
         public async Task<IEnumerable<ExperienciaDto>> GetAll(int userId)
         {
             return _mapper.Map<IEnumerable<ExperienciaDto>>(await _entityFramework.Experiencia.Where(u => u.Usuario_Id == userId).ToListAsync());
@@ -20,13 +20,13 @@ namespace ApiBase.Repositories.UsuarioLogado
 
         public async Task<bool> Delete(int id, int Experienciaid)
         {
-            Experiencia? experienciaDb = await _entityFramework.Experiencia.Where(e => e.Experiencia_Id == Experienciaid && e.Usuario_Id == id).FirstAsync();
+            Experiencia? experienciaDb = await _entityFramework.Experiencia.Where(e => e.Experiencia_Id == Experienciaid && e.Usuario_Id == id).FirstOrDefaultAsync();
 
             if (experienciaDb != null)
             {
                 _entityFramework.Remove(experienciaDb);
 
-                if(await _entityFramework.SaveChangesAsync() > 0)
+                if (await _entityFramework.SaveChangesAsync() > 0)
                 {
                     return true;
                 }
@@ -51,17 +51,14 @@ namespace ApiBase.Repositories.UsuarioLogado
 
             await _entityFramework.AddAsync(experienciaDb);
 
-            if (await _entityFramework.SaveChangesAsync() > 0)
-            {
-                return true;
-            }
+            await _entityFramework.SaveChangesAsync();
 
-            return false;
+            return true;
         }
 
         public async Task<bool> Put(ExperienciaDto experiencia, int id)
         {
-            Experiencia? experienciaDb = await _entityFramework.Experiencia.Where(e => e.Experiencia_Id == experiencia.Experiencia_Id && e.Usuario_Id == id).FirstAsync();
+            Experiencia? experienciaDb = await _entityFramework.Experiencia.Where(e => e.Experiencia_Id == experiencia.Experiencia_Id && e.Usuario_Id == id).FirstOrDefaultAsync();
 
             if (experienciaDb != null)
             {

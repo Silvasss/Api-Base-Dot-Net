@@ -17,8 +17,8 @@ namespace ApiBase.Controllers.Instituicao
         /// <summary>
         /// Retorna lista de solicitações de graduações que não foram validadas
         /// </summary>
-        /// <response code="200">Lista de objetos Solicitação</response>
-        /// <response code="404">Nenhum objeto Solicitação encontrado</response>
+        /// <response code="200">Objetos solicitação</response>
+        /// <response code="404">Nenhuma encontrada</response>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -40,13 +40,18 @@ namespace ApiBase.Controllers.Instituicao
         /// </summary>
         /// <param name="id"></param>
         /// <response code="200">Solicitação</response>
+        /// <response code="404">Não encontrada</response>
         [HttpGet("{id}")]
         public async Task<ActionResult<SolicitacaoDto>> Get(int id)
         {
-            // -- Alterar código para retorna NotFound() --
-            // --------------------------------------------
+            SolicitacaoDto solicitacao = await _repository.GetSolicitacao(id, int.Parse(User.Claims.First(x => x.Type == "userId").Value));
+            
+            if (solicitacao != null)
+            {
+                return solicitacao;
+            }
 
-            return Ok(await _repository.GetSolicitacao(id, int.Parse(User.Claims.First(x => x.Type == "userId").Value)));
+            return NotFound();
         }
 
         /// <summary>
@@ -62,8 +67,8 @@ namespace ApiBase.Controllers.Instituicao
         ///     }  
         /// </remarks>
         /// <param name="solicitaCurso">Objeto Solicitação</param>
-        /// <response code="204">Solicitação atualizada</response>
-        /// <response code="404">Solicitação não encotrada</response>
+        /// <response code="204">Atualizada</response>
+        /// <response code="404">Não encontrada</response>
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

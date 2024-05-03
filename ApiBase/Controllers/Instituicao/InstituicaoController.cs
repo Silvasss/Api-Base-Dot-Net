@@ -23,7 +23,7 @@ namespace ApiBase.Controllers.Instituicao
         [ProducesDefaultResponseType]
         public async Task<ActionResult<InstituicaoDto>> Get()
         {
-            return Ok(await _repository.Get(int.Parse(User.Claims.First(x => x.Type == "userId").Value)));
+            return await _repository.Get(int.Parse(User.Claims.First(x => x.Type == "userId").Value));
         }
 
         /// <summary>
@@ -38,22 +38,17 @@ namespace ApiBase.Controllers.Instituicao
         ///     }
         /// Os Plus Codes funcionam como endereços físicos. São baseados em latitude e longitude e usam um 
         /// sistema de grade simples e um conjunto de 20 caracteres alfanuméricos.   
-        /// </remarks>
+        /// </remarks>+
         /// <param name="instituicao">Objeto Instituição</param>
-        /// <response code="204">Instituição atualizada</response>
-        /// <response code="500">Error interno do servidor</response>
+        /// <response code="204">Atualizado</response>
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesDefaultResponseType]
         public async Task<IActionResult> Put(InstituicaoDto instituicao)
         {
-            if (await _repository.Put(instituicao, int.Parse(User.Claims.First(x => x.Type == "userId").Value)))
-            {
-                return NoContent();
-            }
+            await _repository.Put(instituicao, int.Parse(User.Claims.First(x => x.Type == "userId").Value));
 
-            return StatusCode(StatusCodes.Status500InternalServerError);
+            return NoContent();
         }
     }
 }

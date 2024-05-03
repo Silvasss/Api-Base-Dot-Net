@@ -17,8 +17,8 @@ namespace ApiBase.Controllers.UsuarioLogado
         /// <summary>
         /// Lista de graduações do usuário
         /// </summary>
-        /// <response code="200">Lista de objetos GraduacaoDto</response>
-        /// <response code="404">Nenhum objeto GraduacaoDto encontrado</response>
+        /// <response code="200">Lista de objetos Graduação</response>
+        /// <response code="404">Nenhuma encontrada</response>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -52,19 +52,16 @@ namespace ApiBase.Controllers.UsuarioLogado
         /// O campo 'Fim' é opcional.
         /// </remarks>
         /// <param name="graduacao"></param>
-        /// <response code="201">Nova graduação criada</response>
+        /// <response code="201">Criada</response>
         /// <response code="400">Falha na validação da entrada</response>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Post(GraduacaoDto graduacao)
         {
-            if (await _repository.Post(graduacao, int.Parse(User.Claims.First(x => x.Type == "userId").Value)))
-            {
-                return Created();
-            }
+            await _repository.Post(graduacao, int.Parse(User.Claims.First(x => x.Type == "userId").Value));
 
-            return BadRequest();
+            return Created();
         }
 
         /// <summary>
@@ -82,8 +79,8 @@ namespace ApiBase.Controllers.UsuarioLogado
         /// Não é possível alterar o curso é a instituição vinculada a um objeto. O campo 'Fim' é opcional.    
         /// </remarks>
         /// <param name="graduacao"></param>
-        /// <response code="204">Graduação atualizada</response>
-        /// <response code="404">Graduação não encontrada</response>
+        /// <response code="204">Atualizada</response>
+        /// <response code="404">Não encontrada</response>
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -102,8 +99,8 @@ namespace ApiBase.Controllers.UsuarioLogado
         /// Apagar uma graduação
         /// </summary>
         /// <param name="id"></param>
-        /// <response code="204">Graduação apagada</response>
-        /// <response code="404">Graduação não encotrada</response>
+        /// <response code="204">Apagada</response>
+        /// <response code="404">Não encotrada</response>
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

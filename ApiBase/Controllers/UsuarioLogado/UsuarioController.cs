@@ -23,7 +23,7 @@ namespace ApiBase.Controllers.UsuarioLogado
         [ProducesDefaultResponseType]
         public async Task<ActionResult<UsuarioDto>> Get()
         {
-            return Ok(await _repository.Get(int.Parse(User.Claims.First(x => x.Type == "userId").Value)));
+            return await _repository.Get(int.Parse(User.Claims.First(x => x.Type == "userId").Value));
         }
 
         /// <summary>
@@ -41,41 +41,31 @@ namespace ApiBase.Controllers.UsuarioLogado
         /// sistema de grade simples e um conjunto de 20 caracteres alfanuméricos.   
         /// </remarks>
         /// <param name="user">Objeto Usuario</param>
-        /// <response code="204">Objeto Usuario</response>
-        /// <response code="500">Error interno do servidor</response>
+        /// <response code="204">Atualizado</response>
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesDefaultResponseType]
         public async Task<IActionResult> Put(UsuarioDto user)
-        {            
+        {
             user.Usuario_Id = int.Parse(User.Claims.First(x => x.Type == "userId").Value);
 
-            if (await _repository.Put(user))
-            {
-                return NoContent();
-            }
+            await _repository.Put(user);
 
-            return StatusCode(StatusCodes.Status500InternalServerError);
+            return NoContent();
         }
 
         /// <summary>
         /// Apagar a conta 
         /// </summary>
-        /// <response code="204">Usuário apagado</response>
-        /// <response code="500">Error interno do servidor</response>
+        /// <response code="204">Apagado</response>
         [HttpDelete]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesDefaultResponseType]
         public async Task<IActionResult> Delete()
         {
-            if (await _repository.Delete(int.Parse(User.Claims.First(x => x.Type == "userId").Value)))
-            {
-                return NoContent();
-            }
+            await _repository.Delete(int.Parse(User.Claims.First(x => x.Type == "userId").Value));
 
-            return StatusCode(StatusCodes.Status500InternalServerError); ;
+            return NoContent();
         }
     }
 }

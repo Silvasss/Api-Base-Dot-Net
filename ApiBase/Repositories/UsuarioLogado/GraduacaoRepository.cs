@@ -20,7 +20,7 @@ namespace ApiBase.Repositories.UsuarioLogado
 
         public async Task<bool> Delete(int id, int userId)
         {
-            Graduacao? graduacaoDb = await _entityFramework.Graduacaos.Where(g => g.Graduacao_Id == id && g.Usuario_Id == userId).FirstAsync();
+            Graduacao? graduacaoDb = await _entityFramework.Graduacaos.Where(g => g.Graduacao_Id == id && g.Usuario_Id == userId).FirstOrDefaultAsync();
 
             if (graduacaoDb != null)
             {
@@ -55,17 +55,14 @@ namespace ApiBase.Repositories.UsuarioLogado
 
             await _entityFramework.AddAsync(graduacaoDb);
 
-            if (await _entityFramework.SaveChangesAsync() > 0)
-            {
-                return true;
-            }
-            
-            return false;
+            await _entityFramework.SaveChangesAsync();
+
+            return true;
         }
 
         public async Task<bool> Put(GraduacaoDto graduacao, int id)
         {
-            Graduacao? graduacaoDb = await _entityFramework.Graduacaos.Where(g => g.Graduacao_Id == graduacao.Graduacao_Id && g.Usuario_Id == id).FirstAsync();
+            Graduacao? graduacaoDb = await _entityFramework.Graduacaos.Where(g => g.Graduacao_Id == graduacao.Graduacao_Id && g.Usuario_Id == id).FirstOrDefaultAsync();
 
             if (graduacaoDb != null)
             {

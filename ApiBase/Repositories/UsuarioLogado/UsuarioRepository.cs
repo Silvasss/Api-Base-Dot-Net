@@ -20,17 +20,11 @@ namespace ApiBase.Repositories.UsuarioLogado
 
             Auth? authDb = await _entityFramework.Auth.Where(a => a.Auth_id == dados.Auth_Id).FirstAsync();
 
-            if (authDb != null) 
-            { 
-                _entityFramework.Auth.Remove(authDb);
+            _entityFramework.Auth.Remove(authDb);
 
-                if (await _entityFramework.SaveChangesAsync() > 0)
-                {
-                    return true;
-                }
-            }
+            await _entityFramework.SaveChangesAsync();
 
-            return false;
+            return true;
         }
 
         public async Task<ActionResult<UsuarioDto>> Get(int id)
@@ -42,19 +36,13 @@ namespace ApiBase.Repositories.UsuarioLogado
         {
             Usuario? userDb = await _entityFramework.Usuarios.Where(a => a.Usuario_Id == user.Usuario_Id).FirstAsync();
 
-            if (userDb != null)
-            { 
-                userDb.Nome = user.Nome;
-                userDb.Pais = user.Pais;
-                userDb.PlusCode = user.PlusCode;
+            userDb.Nome = user.Nome;
+            userDb.Pais = user.Pais;
+            userDb.PlusCode = user.PlusCode;
 
-                if (await _entityFramework.SaveChangesAsync() > 0)
-                {
-                    return true;
-                }
-            }
+            await _entityFramework.SaveChangesAsync();
 
-            return false;
+            return true;
         }
     }
 }

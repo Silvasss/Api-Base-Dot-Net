@@ -19,10 +19,10 @@ namespace ApiBase.Controllers.Instituicao
         // ------------------------------------------------------
 
         /// <summary>
-        /// Retorna lista de cursos
+        /// Retorna lista de objetos curso
         /// </summary>
-        /// <response code="200">Lista de objetos Curso</response>
-        /// <response code="404">Nenhum objeto Curso encontrado</response>
+        /// <response code="200">Lista de objetos</response>
+        /// <response code="404">Nenhum encontrado</response>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -50,21 +50,16 @@ namespace ApiBase.Controllers.Instituicao
         ///         "Ativo": true
         ///     }  
         /// </remarks>
-        /// <param name="curso">Objeto Curso</param>
-        /// <response code="201">Novo curso criado</response>
-        /// <response code="500">Error interno do servidor</response>
+        /// <param name="curso">Objeto curso</param>
+        /// <response code="201">Criado</response>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesDefaultResponseType]
         public async Task<ActionResult> Post(CursoDto curso)
         {
-            if (await _repository.Post(curso, int.Parse(User.Claims.First(x => x.Type == "userId").Value)))
-            {
-                return Created();
-            }
+            await _repository.Post(curso, int.Parse(User.Claims.First(x => x.Type == "userId").Value));
 
-            return StatusCode(StatusCodes.Status500InternalServerError);
+            return Created();
         }
 
         /// <summary>
@@ -80,8 +75,8 @@ namespace ApiBase.Controllers.Instituicao
         ///     }  
         /// </remarks>
         /// <param name="curso">Objeto Curso</param>
-        /// <response code="204">Curso atualizado</response>
-        /// <response code="404">Curso não encotrado</response>
+        /// <response code="204">Atualizado</response>
+        /// <response code="404">Não encotrado</response>
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -100,8 +95,8 @@ namespace ApiBase.Controllers.Instituicao
         /// Apagar um curso
         /// </summary>
         /// <param name="id"></param>
-        /// <response code="204">Curso apagado</response>
-        /// <response code="404">Curso não encotrado</response>
+        /// <response code="204">Apagado</response>
+        /// <response code="404">Não encotrado</response>
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

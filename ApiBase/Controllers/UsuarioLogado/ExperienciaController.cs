@@ -17,8 +17,8 @@ namespace ApiBase.Controllers.UsuarioLogado
         /// <summary>
         /// Retorna lista de experiências profissionais  
         /// </summary>
-        /// <response code="200">Lista de objetos Experiencia</response>
-        /// <response code="404">Nenhum objeto Experiencia encontrado</response>
+        /// <response code="200">Lista de experiências profissionais</response>
+        /// <response code="404">Nenhuma encontrada</response>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -54,21 +54,16 @@ namespace ApiBase.Controllers.UsuarioLogado
         /// Os Plus Codes funcionam como endereços físicos. São baseados em latitude e longitude e usam um 
         /// sistema de grade simples e um conjunto de 20 caracteres alfanuméricos.  
         /// </remarks>
-        /// <param name="experiencia">Objeto Experiencia</param>
-        /// <response code="201">Nova experiencia profissional criada</response>
-        /// <response code="500">Error interno do servidor</response>
+        /// <param name="experiencia">Objeto Experiência</param>
+        /// <response code="201">Criada</response>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesDefaultResponseType]
         public async Task<IActionResult> Post(ExperienciaDto experiencia)
         {
-            if (await _repository.Post(experiencia, int.Parse(User.Claims.First(x => x.Type == "userId").Value)))
-            {
-                return Created();
-            }
+            await _repository.Post(experiencia, int.Parse(User.Claims.First(x => x.Type == "userId").Value));
 
-            return StatusCode(StatusCodes.Status500InternalServerError);
+            return Created();
         }
 
         /// <summary>
@@ -91,12 +86,12 @@ namespace ApiBase.Controllers.UsuarioLogado
         /// Os Plus Codes funcionam como endereços físicos. São baseados em latitude e longitude e usam um 
         /// sistema de grade simples e um conjunto de 20 caracteres alfanuméricos.  
         /// </remarks>
-        /// <param name="experiencia">Objeto Experiencia</param>
-        /// <response code="204">Experiencia profissional atualizada</response>
-        /// <response code="500">Error interno do servidor</response>
+        /// <param name="experiencia">Objeto experiência</param>
+        /// <response code="204">Atualizada</response>
+        /// <response code="404">Não encontrada</response>
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
         public async Task<IActionResult> Put(ExperienciaDto experiencia)
         {
@@ -105,15 +100,15 @@ namespace ApiBase.Controllers.UsuarioLogado
                 return NoContent();
             }
 
-            return StatusCode(StatusCodes.Status500InternalServerError);
+            return NotFound();
         }
 
         /// <summary>
         /// Apagar uma experiência profissional
         /// </summary>
         /// <param name="id"></param>
-        /// <response code="204">Experiencia profissional apagada</response>
-        /// <response code="404">Experiencia profissional não encotrada</response>
+        /// <response code="204">Apagada</response>
+        /// <response code="404">Não encotrada</response>
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

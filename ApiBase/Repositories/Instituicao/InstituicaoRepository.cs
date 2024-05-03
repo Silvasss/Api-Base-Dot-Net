@@ -22,18 +22,12 @@ namespace ApiBase.Repositories.Instituicao
         {
             InstituicaoEF instituicaoDb = await _entityFramework.Instituicao.Where(i => i.Instituicao_Id == id).FirstAsync();
 
-            if (instituicaoDb != null)
-            {
-                instituicaoDb.Nome = instituicao.Nome;
-                instituicaoDb.PlusCode = instituicao.PlusCode;
+            instituicaoDb.Nome = instituicao.Nome;
+            instituicaoDb.PlusCode = instituicao.PlusCode;
 
-                if (await _entityFramework.SaveChangesAsync() > 0)
-                {
-                    return true;
-                }
-            }
+            await _entityFramework.SaveChangesAsync();
 
-            return false;
+            return true;
         }
     }
 }

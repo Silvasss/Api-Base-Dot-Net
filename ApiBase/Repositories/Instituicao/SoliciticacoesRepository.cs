@@ -20,12 +20,12 @@ namespace ApiBase.Repositories.Instituicao
 
         public async Task<SolicitacaoDto> GetSolicitacao(int id, int InstituicaoId)
         {
-            return _mapper.Map<SolicitacaoDto>(await _entityFramework.Solicitacao.Where(s => s.Solicitacao_Id == id && s.Instituicao_Id == InstituicaoId).FirstAsync());
+            return _mapper.Map<SolicitacaoDto>(await _entityFramework.Solicitacao.Where(s => s.Solicitacao_Id == id && s.Instituicao_Id == InstituicaoId).FirstOrDefaultAsync());
         }
 
         public async Task<bool> Put(SolicitacaoDto solicitacao, int id)
         {
-            Solicitacao? solicitacaoDb = await _entityFramework.Solicitacao.Where(s => s.Solicitacao_Id == solicitacao.Solicitacao_Id && s.Instituicao_Id == id).FirstAsync();
+            Solicitacao? solicitacaoDb = await _entityFramework.Solicitacao.Where(s => s.Solicitacao_Id == solicitacao.Solicitacao_Id && s.Instituicao_Id == id).FirstOrDefaultAsync();
 
             if (solicitacaoDb != null)
             {

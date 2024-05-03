@@ -4,7 +4,6 @@ using ApiBase.Dtos;
 using ApiBase.Models;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 
 namespace ApiBase.Repositories
 {
@@ -23,10 +22,15 @@ namespace ApiBase.Repositories
         {
             VisitanteDto visitanteDb = _mapper.Map<VisitanteDto>(await _entityFramework.Usuarios.Where(u => u.Usuario_Id == userId && u.Tipo_Conta_Id == 2).FirstOrDefaultAsync());
 
+            if (visitanteDb == null)
+            {
+                return visitanteDb;
+            }
+            
             visitanteDb.Experiencias = _mapper.Map<IEnumerable<ExperienciaDto>>(await _entityFramework.Experiencia.Where(u => u.Usuario_Id == userId).ToListAsync());
 
             visitanteDb.Graduacoes = _mapper.Map<IEnumerable<GraduacaoDto>>(await _entityFramework.Graduacaos.Where(u => u.Usuario_Id == userId).ToListAsync());
-
+            
             return visitanteDb;
         }
 
