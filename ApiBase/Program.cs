@@ -2,6 +2,7 @@ using ApiBase.Contracts;
 using ApiBase.Contracts.Admin;
 using ApiBase.Contracts.Instituicao;
 using ApiBase.Contracts.UsuarioLogado;
+using ApiBase.Filters;
 using ApiBase.Repositories;
 using ApiBase.Repositories.Admin;
 using ApiBase.Repositories.Instituicao;
@@ -17,7 +18,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add(typeof(ApiExceptionFilter));
+});
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 //builder.Services.AddEndpointsApiExplorer();
 
