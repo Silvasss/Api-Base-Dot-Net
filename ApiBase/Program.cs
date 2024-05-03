@@ -3,6 +3,7 @@ using ApiBase.Contracts.Admin;
 using ApiBase.Contracts.Instituicao;
 using ApiBase.Contracts.UsuarioLogado;
 using ApiBase.Filters;
+using ApiBase.Logging;
 using ApiBase.Repositories;
 using ApiBase.Repositories.Admin;
 using ApiBase.Repositories.Instituicao;
@@ -110,6 +111,10 @@ builder.Services.AddScoped<IExperienciaRepository, ExperienciaRepository>();
 builder.Services.AddScoped<IGraduacaoRepository, GraduacaoRepository>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 
+builder.Logging.AddProvider(new CustomLoggerProvider(new CustomLoggerProviderConfiguration
+{
+    LogLevel = LogLevel.Error
+}));
 
 var app = builder.Build();
 

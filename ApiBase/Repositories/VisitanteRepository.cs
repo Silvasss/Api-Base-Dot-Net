@@ -26,7 +26,7 @@ namespace ApiBase.Repositories
             {
                 return visitanteDb;
             }
-            
+
             visitanteDb.Experiencias = _mapper.Map<IEnumerable<ExperienciaDto>>(await _entityFramework.Experiencia.Where(u => u.Usuario_Id == userId).ToListAsync());
 
             visitanteDb.Graduacoes = _mapper.Map<IEnumerable<GraduacaoDto>>(await _entityFramework.Graduacaos.Where(u => u.Usuario_Id == userId).ToListAsync());
