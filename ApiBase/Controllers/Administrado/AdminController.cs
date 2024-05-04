@@ -37,6 +37,27 @@ namespace ApiBase.Controllers.Administrado
         }
 
         /// <summary>
+        /// Retorna lista com os logs do Serilog
+        /// </summary>
+        /// <response code="200">Lista de objetos Serilog</response>
+        /// <response code="404">Nenhum encontrado</response>
+        [HttpGet("logs")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<IEnumerable<SerilogDb>>> IndexLog()
+        {
+            IEnumerable<SerilogDb> logs = await _repository.GetSerilog();
+
+            if (!logs.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(logs);
+        }
+
+        /// <summary>
         /// Criar uma conta do tipo 'instituição'
         /// </summary>
         /// <remarks>              

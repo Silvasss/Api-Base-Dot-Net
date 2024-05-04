@@ -6,24 +6,34 @@ namespace ApiBase.Data
     public class DataContextEF(IConfiguration config) : DbContext
     {
         private readonly IConfiguration _config = config;
-        
+
         public DbSet<Auth> Auth { get; set; }
         public DbSet<AuditLogs> AuditLogs { get; set; }
         public DbSet<TipoConta> TipoContas { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
-        public DbSet<Experiencia> Experiencia { get; set;}
+        public DbSet<Experiencia> Experiencia { get; set; }
         public DbSet<Graduacao> Graduacaos { get; set; }
         public DbSet<Solicitacao> Solicitacao { get; set; }
-        public DbSet<InstituicaoEF> Instituicao { get; set;}
+        public DbSet<InstituicaoEF> Instituicao { get; set; }
         public DbSet<Curso> Curso { get; set; }
+        public DbSet<SerilogDb> Serilog { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if(!optionsBuilder.IsConfigured) optionsBuilder.UseSqlServer(_config.GetConnectionString("DefaultConnection"), optionsBuilder => optionsBuilder.EnableRetryOnFailure());
+            if (!optionsBuilder.IsConfigured) optionsBuilder.UseSqlServer(_config.GetConnectionString("DefaultConnection"), optionsBuilder => optionsBuilder.EnableRetryOnFailure());
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Log do SeriLog
+            modelBuilder.Entity<SerilogDb>().HasKey(s => s.Id);
+            modelBuilder.Entity<SerilogDb>().Property(s => s.Message);
+            modelBuilder.Entity<SerilogDb>().Property(s => s.MessageTemplate);
+            modelBuilder.Entity<SerilogDb>().Property(s => s.Level);
+            modelBuilder.Entity<SerilogDb>().Property(s => s.TimeStamp).IsRequired();
+            modelBuilder.Entity<SerilogDb>().Property(s => s.Exception);
+            modelBuilder.Entity<SerilogDb>().Property(s => s.Properties);
+
             // Log de alteração
             modelBuilder.Entity<AuditLogs>().HasKey(a => a.AuditLog_Id);
             modelBuilder.Entity<AuditLogs>().Property(a => a.Tipo).HasMaxLength(10).IsRequired();
@@ -57,7 +67,7 @@ namespace ApiBase.Data
             modelBuilder.Entity<InstituicaoEF>().Property(a => a.UpdatedAt).HasComputedColumnSql("getdate()").ValueGeneratedOnAddOrUpdate();
             modelBuilder.Entity<InstituicaoEF>().Property(a => a.Tipo_Conta_Id).HasDefaultValue(2);
             modelBuilder.Entity<InstituicaoEF>().HasOne<Auth>(a => a.Auth).WithOne(e => e.Instituicao).HasForeignKey<InstituicaoEF>(i => i.Auth_Id).IsRequired();
-            
+
             // Curso da instituição
             modelBuilder.Entity<Curso>().HasKey(c => c.Curso_Id);
             modelBuilder.Entity<Curso>().Property(c => c.Nome).HasMaxLength(50).IsRequired();
@@ -99,7 +109,7 @@ namespace ApiBase.Data
             modelBuilder.Entity<Graduacao>().Property(g => g.CreatedAt).HasDefaultValueSql("getdate()");
             modelBuilder.Entity<Graduacao>().Property(g => g.UpdatedAt).HasComputedColumnSql("getdate()").ValueGeneratedOnAddOrUpdate();
             modelBuilder.Entity<Graduacao>().HasOne<Usuario>(g => g.Usuario).WithMany(u => u.graduacoes).HasForeignKey(e => e.Usuario_Id).IsRequired();
-            
+
             // Solicitação
             modelBuilder.Entity<Solicitacao>().HasKey(s => s.Solicitacao_Id);
             modelBuilder.Entity<Solicitacao>().Property(s => s.Descricao).HasMaxLength(50);

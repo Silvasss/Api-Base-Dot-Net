@@ -2,8 +2,6 @@ using ApiBase.Contracts;
 using ApiBase.Contracts.Admin;
 using ApiBase.Contracts.Instituicao;
 using ApiBase.Contracts.UsuarioLogado;
-using ApiBase.Filters;
-using ApiBase.Logging;
 using ApiBase.Repositories;
 using ApiBase.Repositories.Admin;
 using ApiBase.Repositories.Instituicao;
@@ -11,6 +9,8 @@ using ApiBase.Repositories.UsuarioLogado;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
+using Serilog.Sinks.MSSqlServer;
 using System.Reflection;
 using System.Text;
 
@@ -18,14 +18,21 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+var logger = new LoggerConfiguration().WriteTo.MSSqlServer(
+        connectionString: builder.Configuration.GetConnectionString("DefaultConnection"),
+        sinkOptions: new MSSqlServerSinkOptions
+        {            
+            TableName = "logs",
+            AutoCreateSqlTable = true
+        },
+        restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Warning
+    ).CreateLogger();
 
-builder.Services.AddControllers(options =>
-{
-    options.Filters.Add(typeof(ApiExceptionFilter));
-});
+builder.Logging.AddSerilog(logger);
+
+builder.Services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-//builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -110,11 +117,6 @@ builder.Services.AddScoped<IInstituicaoRepository, InstituicaoRepository>();
 builder.Services.AddScoped<IExperienciaRepository, ExperienciaRepository>();
 builder.Services.AddScoped<IGraduacaoRepository, GraduacaoRepository>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
-
-builder.Logging.AddProvider(new CustomLoggerProvider(new CustomLoggerProviderConfiguration
-{
-    LogLevel = LogLevel.Error
-}));
 
 var app = builder.Build();
 

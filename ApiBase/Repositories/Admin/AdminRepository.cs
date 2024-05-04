@@ -57,6 +57,11 @@ namespace ApiBase.Repositories.Admin
             return await _entityFramework.AuditLogs.ToListAsync();
         }
 
+        public async Task<IEnumerable<SerilogDb>> GetSerilog()
+        {
+            return await _entityFramework.Serilog.ToListAsync();
+        }
+
         public async Task<bool> Post(InstituicaoDtoCreate instituicaoInsert)
         {
             byte[] passwordSalt = new byte[128 / 8];
