@@ -22,9 +22,9 @@ var logger = new LoggerConfiguration().WriteTo.MSSqlServer(
         connectionString: builder.Configuration.GetConnectionString("DefaultConnection"),
         sinkOptions: new MSSqlServerSinkOptions
         {            
-            TableName = "logs",
+            TableName = "Serilog",
             AutoCreateSqlTable = true
-        },
+        }
         restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Warning
     ).CreateLogger();
 

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ApiBase.Migrations
 {
     /// <inheritdoc />
-    public partial class InitalCreate : Migration
+    public partial class createBanco : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -18,7 +18,7 @@ namespace ApiBase.Migrations
                     AuditLog_Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Tipo = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
-                    Descricao = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Descricao = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getdate()"),
                     Auth_Usuario = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
@@ -91,8 +91,8 @@ namespace ApiBase.Migrations
                     Usuario_Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Nome = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Pais = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, defaultValueSql: "'Brasil'"),
-                    PlusCode = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false, defaultValueSql: "'RM88+4G Plano Diretor Sul, Palmas - State of Tocantins'"),
+                    Pais = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, defaultValue: "Brasil"),
+                    PlusCode = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false, defaultValue: "RM88+4G Plano Diretor Sul, Palmas - State of Tocantins"),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "getdate()"),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, computedColumnSql: "getdate()"),
                     Auth_Id = table.Column<int>(type: "int", nullable: false),

@@ -16,7 +16,6 @@ namespace ApiBase.Data
         public DbSet<Solicitacao> Solicitacao { get; set; }
         public DbSet<InstituicaoEF> Instituicao { get; set; }
         public DbSet<Curso> Curso { get; set; }
-        public DbSet<SerilogDb> Serilog { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -25,15 +24,6 @@ namespace ApiBase.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Log do SeriLog
-            modelBuilder.Entity<SerilogDb>().HasKey(s => s.Id);
-            modelBuilder.Entity<SerilogDb>().Property(s => s.Message);
-            modelBuilder.Entity<SerilogDb>().Property(s => s.MessageTemplate);
-            modelBuilder.Entity<SerilogDb>().Property(s => s.Level);
-            modelBuilder.Entity<SerilogDb>().Property(s => s.TimeStamp).IsRequired();
-            modelBuilder.Entity<SerilogDb>().Property(s => s.Exception);
-            modelBuilder.Entity<SerilogDb>().Property(s => s.Properties);
-
             // Log de alteração
             modelBuilder.Entity<AuditLogs>().HasKey(a => a.AuditLog_Id);
             modelBuilder.Entity<AuditLogs>().Property(a => a.Tipo).HasMaxLength(10).IsRequired();

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ApiBase.Migrations
 {
     [DbContext(typeof(DataContextEF))]
-    [Migration("20240430184015_InitalCreate")]
-    partial class InitalCreate
+    [Migration("20240505135149_createBanco")]
+    partial class createBanco
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -45,8 +45,7 @@ namespace ApiBase.Migrations
 
                     b.Property<string>("Descricao")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Tipo")
                         .IsRequired()
@@ -395,14 +394,14 @@ namespace ApiBase.Migrations
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)")
-                        .HasDefaultValueSql("'Brasil'");
+                        .HasDefaultValue("Brasil");
 
                     b.Property<string>("PlusCode")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)")
-                        .HasDefaultValueSql("'RM88+4G Plano Diretor Sul, Palmas - State of Tocantins'");
+                        .HasDefaultValue("RM88+4G Plano Diretor Sul, Palmas - State of Tocantins");
 
                     b.Property<int>("Tipo_Conta_Id")
                         .ValueGeneratedOnAdd()
