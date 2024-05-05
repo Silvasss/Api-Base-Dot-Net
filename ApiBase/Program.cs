@@ -24,7 +24,7 @@ var logger = new LoggerConfiguration().WriteTo.MSSqlServer(
         {            
             TableName = "Serilog",
             AutoCreateSqlTable = true
-        }
+        },
         restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Warning
     ).CreateLogger();
 
