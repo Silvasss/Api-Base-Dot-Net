@@ -70,7 +70,7 @@ namespace ApiBase.Controllers.Visitante
                 return NotFound();
             }
 
-            return Ok(await _repository.Get(userId));
+            return Ok(visitanteRetorno);
         }
     }
 }
