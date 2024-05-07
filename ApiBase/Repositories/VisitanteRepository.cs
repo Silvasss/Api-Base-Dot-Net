@@ -2,6 +2,7 @@
 using ApiBase.Data;
 using ApiBase.Dtos;
 using ApiBase.Models;
+using ApiBase.Pagination;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,13 +31,19 @@ namespace ApiBase.Repositories
             visitanteDb.Experiencias = _mapper.Map<IEnumerable<ExperienciaDto>>(await _entityFramework.Experiencia.Where(u => u.Usuario_Id == userId).ToListAsync());
 
             visitanteDb.Graduacoes = _mapper.Map<IEnumerable<GraduacaoDto>>(await _entityFramework.Graduacaos.Where(u => u.Usuario_Id == userId).ToListAsync());
-            
+
             return visitanteDb;
         }
 
-        public async Task<IEnumerable<UsuarioDto>> Index()
+        public async Task<PagedList<Usuario>> Index(VisitanteParameters visitanteParams)
         {
-            return _mapper.Map<IEnumerable<UsuarioDto>>(await _entityFramework.Usuarios.Where(u => u.Tipo_Conta_Id == 2).ToListAsync());
+            var generico = await _entityFramework.Set<Usuario>().Where(u => u.Tipo_Conta_Id == 2).AsNoTracking().ToListAsync();
+
+            var usuarios = generico.OrderBy(v => v.Usuario_Id).AsQueryable();
+
+            var usuariosOrdenados = PagedList<Usuario>.ToPagedList(usuarios, visitanteParams.PageNumber, visitanteParams.PageSize);
+
+            return usuariosOrdenados;
         }
     }
 }

@@ -1,11 +1,12 @@
 ﻿using ApiBase.Dtos;
 using ApiBase.Models;
+using ApiBase.Pagination;
 
 namespace ApiBase.Contracts
 {
     public interface IVisitanteRepository
     {
-        Task<IEnumerable<UsuarioDto>> Index();
+        Task<PagedList<Usuario>> Index(VisitanteParameters visitanteParams);
         Task<VisitanteDto> Get(int userId);
     }
 }
