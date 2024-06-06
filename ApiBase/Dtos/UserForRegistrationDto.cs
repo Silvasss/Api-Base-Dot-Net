@@ -4,12 +4,16 @@ namespace ApiBase.Dtos
 {
     public partial class UserForRegistrationDto
     {
-        [Required(ErrorMessage = "O nome do usuário é obrigatório")]
-        [StringLength(8, ErrorMessage = "Tamanho entre 6 a 8 caracteres", MinimumLength = 4)]
+        [Required(ErrorMessage = "Nome é obrigatório")]
+        [StringLength(50, ErrorMessage = "Tamanho entre 4 a 50 caracteres", MinimumLength = 4)]
+        public string Nome { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Usuário é obrigatório")]
+        [StringLength(32, ErrorMessage = "Tamanho entre 4 a 32 caracteres", MinimumLength = 4)]
         public string Usuario { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "A senha do usuário é obrigatória")]
-        [MinLength(6, ErrorMessage = "Tamanho mínimo da senha 6 caracteres")]
+        [StringLength(16, ErrorMessage = "Tamanho entre 4 a 16 caracteres", MinimumLength = 4)]
         public string Password { get; set; } = string.Empty;
     }
 }

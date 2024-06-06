@@ -26,6 +26,7 @@ namespace ApiBase.Controllers
         /// Exemplo de request:
         /// 
         ///     {
+        ///         "Nome": "NomeDeExibição",
         ///         "Usuario": "NomeDoUsuario",
         ///         "Password": "SenhaDoUsuario"
         ///     }
@@ -39,13 +40,7 @@ namespace ApiBase.Controllers
         [ProducesDefaultResponseType]
         public async Task<IActionResult> Register(UserForRegistrationDto userForRegistration)
         {
-            UserForLoginDto userForSetPassword = new()
-            {
-                Usuario = userForRegistration.Usuario,
-                Password = userForRegistration.Password
-            };
-
-            if (await _authHelper.SetPasswordAsync(userForSetPassword))
+            if (await _authHelper.SetPasswordAsync(userForRegistration))
             {
                 return Created();
             }
@@ -54,7 +49,7 @@ namespace ApiBase.Controllers
         }
 
         /// <summary>
-        /// Autenticação para contas do tipo usuário e administrador 
+        /// Autenticação
         /// </summary>
         /// <remarks>
         /// Exemplo de request:
@@ -65,7 +60,7 @@ namespace ApiBase.Controllers
         ///     }
         /// </remarks>
         /// <param name="userForLogin">Objeto UserForLoginDto</param>
-        /// <response code="200">Token do usuário</response>
+        /// <response code="200">Token, tipo da conta e nome</response>
         /// <response code="401">Falha na validação da entrada</response>
         [HttpPost("login")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -75,70 +70,53 @@ namespace ApiBase.Controllers
         {
             Auth? dadosLogin = await _entityFramework.Auth.Where(a => a.Usuario == userForLogin.Usuario).Include("UsuarioPerfil").FirstOrDefaultAsync();
 
-            if (dadosLogin == null)
+            if (dadosLogin != null)
             {
-                return StatusCode(StatusCodes.Status401Unauthorized, "Credenciais inválidas");
-            }
+                byte[] passwordHash = _authHelper.GetPasswordHash(userForLogin.Password, dadosLogin.PasswordSalt);
 
-            byte[] passwordHash = _authHelper.GetPasswordHash(userForLogin.Password, dadosLogin.PasswordSalt);
-
-            for (int index = 0; index < passwordHash.Length; index++)
-            {
-                if (passwordHash[index] != dadosLogin.PasswordHash[index])
+                for (int index = 0; index < passwordHash.Length; index++)
                 {
-                    return StatusCode(StatusCodes.Status401Unauthorized, "Credenciais inválidas");
+                    if (passwordHash[index] != dadosLogin.PasswordHash[index])
+                    {
+                        return StatusCode(StatusCodes.Status401Unauthorized, "Credenciais inválidas");
+                    }
                 }
-            }
 
-            TipoConta politicaConta = await _entityFramework.TipoContas.FindAsync(dadosLogin.UsuarioPerfil.Tipo_Conta_Id);
+                TipoConta politicaConta = await _entityFramework.TipoContas.FindAsync(dadosLogin.UsuarioPerfil.Tipo_Conta_Id);
 
-            return Ok(new Dictionary<string, string> {
-                {"token", _authHelper.CreateToken(dadosLogin.UsuarioPerfil.Usuario_Id, politicaConta.Nome, userForLogin.Usuario)}
-            });
-        }
-
-        /// <summary>
-        /// Autenticação para contas do tipo instituição
-        /// </summary>
-        /// <remarks>
-        /// Exemplo de request:
-        /// 
-        ///     {
-        ///         "Usuario": "NomeDaInstituição",
-        ///         "Password": "SenhaDaInstituição"
-        ///     }
-        /// </remarks>
-        /// <param name="userForLogin">Objeto UserForLoginDto</param>
-        /// <response code="200">Token do usuário</response>
-        /// <response code="401">Falha na validação da entrada</response>
-        [HttpPost("login2")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]
-        [ProducesDefaultResponseType]
-        public async Task<IActionResult> Login2(UserForLoginDto userForLogin)
-        {
-            Auth? dadosLogin = await _entityFramework.Auth.Where(a => a.Usuario == userForLogin.Usuario).Include("Instituicao").FirstOrDefaultAsync();
-
-            if (dadosLogin == null)
-            {
-                return StatusCode(StatusCodes.Status401Unauthorized, "Credenciais inválidas");
-            }
-
-            byte[] passwordHash = _authHelper.GetPasswordHash(userForLogin.Password, dadosLogin.PasswordSalt);
-
-            for (int index = 0; index < passwordHash.Length; index++)
-            {
-                if (passwordHash[index] != dadosLogin.PasswordHash[index])
+                return Ok(new
                 {
-                    return StatusCode(StatusCodes.Status401Unauthorized, "Credenciais inválidas");
-                }
+                    token = _authHelper.CreateToken(dadosLogin.UsuarioPerfil.Usuario_Id, politicaConta.Nome, userForLogin.Usuario),
+                    role = politicaConta.Nome,
+                    nome = dadosLogin.UsuarioPerfil.Nome
+                });
             }
 
-            TipoConta politicaConta = await _entityFramework.TipoContas.FindAsync(dadosLogin.Instituicao.Tipo_Conta_Id);
+            dadosLogin = await _entityFramework.Auth.Where(a => a.Usuario == userForLogin.Usuario).Include("Instituicao").FirstOrDefaultAsync();
 
-            return Ok(new Dictionary<string, string> {
-                {"token", _authHelper.CreateToken(dadosLogin.Instituicao.Instituicao_Id, politicaConta.Nome, userForLogin.Usuario)}
-            });
+            if (dadosLogin != null)
+            {
+                byte[] passwordHash = _authHelper.GetPasswordHash(userForLogin.Password, dadosLogin.PasswordSalt);
+
+                for (int index = 0; index < passwordHash.Length; index++)
+                {
+                    if (passwordHash[index] != dadosLogin.PasswordHash[index])
+                    {
+                        return StatusCode(StatusCodes.Status401Unauthorized, "Credenciais inválidas");
+                    }
+                }
+
+                TipoConta politicaConta = await _entityFramework.TipoContas.FindAsync(dadosLogin.Instituicao.Tipo_Conta_Id);
+
+                return Ok(new
+                {
+                    token = _authHelper.CreateToken(dadosLogin.Instituicao.Instituicao_Id, politicaConta.Nome, userForLogin.Usuario),
+                    role = politicaConta.Nome,
+                    nome = dadosLogin.Instituicao.Nome
+                });
+            }
+
+            return StatusCode(StatusCodes.Status401Unauthorized, "Credenciais inválidas");
         }
     }
 }

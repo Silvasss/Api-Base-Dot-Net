@@ -56,9 +56,8 @@ namespace ApiBase.Helpers
             return tokenHandler.WriteToken(token);
         }
 
-        public async Task<bool> SetPasswordAsync(UserForLoginDto userForSetPassword)
+        public async Task<bool> SetPasswordAsync(UserForRegistrationDto userForSetPassword)
         {
-
             byte[] passwordSalt = new byte[128 / 8];
 
             using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
@@ -79,7 +78,7 @@ namespace ApiBase.Helpers
 
                 Usuario novoUsuario = new()
                 {
-                    Nome = userForSetPassword.Usuario,
+                    Nome = userForSetPassword.Nome,
                     Tipo_Conta_Id = 2, // Tipo usuário
                     Pais = "Brasil",
                     PlusCode  = "RM88+4G Plano Diretor Sul, Palmas - State of Tocantins"

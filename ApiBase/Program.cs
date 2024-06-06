@@ -1,4 +1,4 @@
-using ApiBase.Contracts;
+    using ApiBase.Contracts;
 using ApiBase.Contracts.Admin;
 using ApiBase.Contracts.Instituicao;
 using ApiBase.Contracts.UsuarioLogado;
@@ -70,15 +70,15 @@ builder.Services.AddCors((options) =>
 {
     options.AddPolicy("DevCors", (corsBuilder) =>
     {
-        corsBuilder.WithOrigins("http://localhost:4200", "http://localhost:3000", "http://localhost:8000")
+        corsBuilder.WithOrigins("http://localhost:3000")
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials();
     });
     options.AddPolicy("ProdCors", (corsBuilder) =>
     {
-        corsBuilder.WithOrigins("https://myProductionSite.com")
-            .AllowAnyMethod()
+        corsBuilder.WithOrigins("https://minharefeicao.com/")
+            .WithMethods("POST", "PUT", "DELETE", "GET")
             .AllowAnyHeader()
             .AllowCredentials();
     });
@@ -139,4 +139,4 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+app.Run(); 
