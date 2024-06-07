@@ -95,6 +95,39 @@ namespace ApiBase.Repositories.Admin
             return dados;
         }
 
+        public async Task<IEnumerable<InstituicaoEF>> GetAllInstituicao()
+        {
+            return await _entityFramework.Instituicao
+                .Select(x => new InstituicaoEF
+                {
+                    Instituicao_Id = x.Instituicao_Id,
+                    Nome = x.Nome,
+                    PlusCode = x.PlusCode,
+                    Ativo = x.Ativo,
+                    CreatedAt = x.CreatedAt
+                })
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<SerilogEntry>> GetAllLogs()
+        {
+            return await _entityFramework.Logs.OrderByDescending(e => e.TimeStamp).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Usuario>> GetAllUsuarios()
+        {
+            return await _entityFramework.Usuarios
+                .Select(x => new Usuario
+                {
+                    Usuario_Id = x.Usuario_Id,
+                    Nome = x.Nome,
+                    PlusCode = x.PlusCode,
+                    CreatedAt = x.CreatedAt,
+                    Auth_Id = x.Auth_Id
+                })
+                .ToListAsync();
+        }
+
         public async Task<bool> Post(InstituicaoDtoCreate instituicaoInsert)
         {
             byte[] passwordSalt = new byte[128 / 8];
@@ -117,7 +150,7 @@ namespace ApiBase.Repositories.Admin
 
                 InstituicaoEF novaInstituicaoEF = new()
                 {
-                    Nome = instituicaoInsert.Usuario,
+                    Nome = instituicaoInsert.Nome,
                     PlusCode = instituicaoInsert.PlusCode,
                     Tipo_Conta_Id = 3 // Tipo Instituição
                 };

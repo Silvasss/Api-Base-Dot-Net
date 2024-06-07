@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace ApiBase.Models
+﻿namespace ApiBase.Models
 {
     public class InstituicaoEF
     {

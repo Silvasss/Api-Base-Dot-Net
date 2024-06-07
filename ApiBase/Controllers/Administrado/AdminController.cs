@@ -28,6 +28,42 @@ namespace ApiBase.Controllers.Administrado
         }
 
         /// <summary>
+        /// Lista do Serilog
+        /// </summary>
+        /// <response code="200">Objeto</response>
+        [HttpGet("/admin/log")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<SerilogEntry>> GetSerilog()
+        {
+            return Ok(await _repository.GetAllLogs());
+        }
+
+        /// <summary>
+        /// Lista de instituições cadastradas 
+        /// </summary>
+        /// <response code="200">Objeto</response>
+        [HttpGet("/admin/instituicoes")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<InstituicaoEF>> GetInstituicao()
+        {
+            return Ok(await _repository.GetAllInstituicao());
+        }
+
+        /// <summary>
+        /// Lista de usuários 
+        /// </summary>
+        /// <response code="200">Objeto</response>
+        [HttpGet("/admin/usuarios")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<InstituicaoEF>> GetUsuarios()
+        {
+            return Ok(await _repository.GetAllUsuarios());
+        }
+
+        /// <summary>
         /// Criar uma conta do tipo 'instituição'
         /// </summary>
         /// <remarks>              
@@ -84,7 +120,7 @@ namespace ApiBase.Controllers.Administrado
         /// <param name="userId"></param>
         /// <response code="204">Apagado</response>
         /// <response code="404">Não encontrado</response>
-        [HttpDelete("/usuario/{userId}")]
+        [HttpDelete("/admin/usuario/{userId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
