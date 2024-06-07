@@ -16,24 +16,15 @@ namespace ApiBase.Controllers.Administrado
         private readonly IAdminRepository _repository = repository;
 
         /// <summary>
-        /// Retorna lista com os logs de alterações
+        /// Lista de informações geral
         /// </summary>
-        /// <response code="200">Lista de objetos Log</response>
-        /// <response code="404">Nenhum encontrado</response>
+        /// <response code="200">Objeto</response>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<IEnumerable<AuditLogs>>> Index()
+        public async Task<ActionResult<AdminDashboard>> Index()
         {
-            IEnumerable<AuditLogs> logs = await _repository.Get();
-
-            if (!logs.Any())
-            {
-                return NotFound();
-            }
-
-            return Ok(logs);
+            return Ok(await _repository.Get());
         }
 
         /// <summary>

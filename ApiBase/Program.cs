@@ -1,4 +1,4 @@
-    using ApiBase.Contracts;
+using ApiBase.Contracts;
 using ApiBase.Contracts.Admin;
 using ApiBase.Contracts.Instituicao;
 using ApiBase.Contracts.UsuarioLogado;
