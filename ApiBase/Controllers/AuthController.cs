@@ -69,8 +69,8 @@ namespace ApiBase.Controllers
         public async Task<IActionResult> Login(UserForLoginDto userForLogin)
         {
             Auth? dadosLogin = await _entityFramework.Auth.Where(a => a.Usuario == userForLogin.Usuario).Include("UsuarioPerfil").FirstOrDefaultAsync();
-
-            if (dadosLogin != null)
+            
+            if (dadosLogin.UsuarioPerfil != null)
             {
                 byte[] passwordHash = _authHelper.GetPasswordHash(userForLogin.Password, dadosLogin.PasswordSalt);
 
@@ -94,7 +94,7 @@ namespace ApiBase.Controllers
 
             dadosLogin = await _entityFramework.Auth.Where(a => a.Usuario == userForLogin.Usuario).Include("Instituicao").FirstOrDefaultAsync();
 
-            if (dadosLogin != null)
+            if (dadosLogin.Instituicao != null)
             {
                 byte[] passwordHash = _authHelper.GetPasswordHash(userForLogin.Password, dadosLogin.PasswordSalt);
 
