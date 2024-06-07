@@ -55,101 +55,42 @@ namespace ApiBase.Repositories.Admin
         public async Task<AdminDashboard> Get()
         {
             string jsonString = @" {
-            ""analyticSistema"": [
-                {
-                    ""title"": ""Total Visualizações"",
-                    ""count"": ""1,42,236"",
-                    ""percentage"": 59.3,
-                    ""color"": null
-                },
-                {
-                    ""title"": ""Total Usuários"",
-                    ""count"": ""78,250"",
-                    ""percentage"": 70.5,
-                    ""color"": null
-                },
-                {
-                    ""title"": ""Total Instituições"",
-                    ""count"": ""18,800"",
-                    ""percentage"": 27.4,
-                    ""color"": ""warning""
-                },
-                {
-                    ""title"": ""Total Logs"",
-                    ""count"": ""35,078"",
-                    ""percentage"": 7.4,
-                    ""color"": ""warning""
-                }
-            ],
-            ""logs"": [
-                {
-                    ""Id"": 1,
-                    ""MessageTemplate"": ""An unhandled exception has occurred while executing the request."",
-                    ""Level"": ""Error"",
-                    ""TimeStamp"": ""2024-05-10T11:06:59.763""
-                },
-                {
-                    ""Id"": 2,
-                    ""MessageTemplate"": ""An unhandled exception has occurred while executing the request."",
-                    ""Level"": ""Error"",
-                    ""TimeStamp"": ""2024-05-10T11:08:39.6""
-                },
-                {
-                    ""Id"": 3,
-                    ""MessageTemplate"": ""An unhandled exception has occurred while executing the request."",
-                    ""Level"": ""Error"",
-                    ""TimeStamp"": ""2024-05-10T11:16:02.137""
-                },
-                {
-                    ""Id"": 4,
-                    ""MessageTemplate"": ""An unhandled exception has occurred while executing the request."",
-                    ""Level"": ""Error"",
-                    ""TimeStamp"": ""2024-05-10T11:27:12.127""
-                },
-                {
-                    ""Id"": 5,
-                    ""MessageTemplate"": ""An unhandled exception has occurred while executing the request."",
-                    ""Level"": ""Error"",
-                    ""TimeStamp"": ""2024-05-10T11:32:25.447""
-                },
-                {
-                    ""Id"": 1022,
-                    ""MessageTemplate"": ""Failed to determine the https port for redirect."",
-                    ""Level"": ""Warning"",
-                    ""TimeStamp"": ""2024-05-13T13:33:50.47""
-                },
-                {
-                    ""Id"": 1063,
-                    ""MessageTemplate"": ""An unhandled exception has occurred while executing the request."",
-                    ""Level"": ""Error"",
-                    ""TimeStamp"": ""2024-05-14T14:47:22.257""
-                },
-                {
-                    ""Id"": 1064,
-                    ""MessageTemplate"": ""An unhandled exception has occurred while executing the request."",
-                    ""Level"": ""Error"",
-                    ""TimeStamp"": ""2024-05-14T14:47:28.17""
-                },
-                {
-                    ""Id"": 1065,
-                    ""MessageTemplate"": ""An unhandled exception has occurred while executing the request."",
-                    ""Level"": ""Error"",
-                    ""TimeStamp"": ""2024-05-14T15:28:09.457""
-                },
-                {
-                    ""Id"": 1066,
-                    ""MessageTemplate"": ""An unhandled exception has occurred while executing the request."",
-                    ""Level"": ""Error"",
-                    ""TimeStamp"": ""2024-05-14T15:33:30.113""
-                }
-            ],
-            ""fonteTrafico"": [63, 15, 22]
-        }";
-                        
+                ""analyticSistema"": [
+                    {
+                        ""title"": ""Total Visualizações"",
+                        ""count"": ""1,42,236"",
+                        ""percentage"": 59.3,
+                        ""color"": null
+                    },
+                    {
+                        ""title"": ""Total Usuários"",
+                        ""count"": ""78,250"",
+                        ""percentage"": 70.5,
+                        ""color"": null
+                    },
+                    {
+                        ""title"": ""Total Instituições"",
+                        ""count"": ""18,800"",
+                        ""percentage"": 27.4,
+                        ""color"": ""warning""
+                    },
+                    {
+                        ""title"": ""Total Logs"",
+                        ""count"": ""35,078"",
+                        ""percentage"": 7.4,
+                        ""color"": ""warning""
+                    }
+                ],
+                ""fonteTrafico"": [63, 15, 22]
+            }";
+
             AdminDashboard dados = JsonConvert.DeserializeObject<AdminDashboard>(jsonString);
 
-            // Falta alterar o entity para retornar os logs gerados pelo Serilog*
-            await _entityFramework.AuditLogs.ToListAsync();
+            // Seleciona os 10 primeiros objetos criados mais recentemente
+            dados.Logs = await _entityFramework.Logs
+                .OrderByDescending(e => e.TimeStamp)
+                .Take(10)
+                .ToListAsync();
 
             return dados;
         }

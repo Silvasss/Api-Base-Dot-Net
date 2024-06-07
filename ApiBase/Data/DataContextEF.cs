@@ -8,6 +8,7 @@ namespace ApiBase.Data
         private readonly IConfiguration _config = config;
 
         public DbSet<Auth> Auth { get; set; }
+        public DbSet<SerilogEntry> Logs { get; set; }
         public DbSet<AuditLogs> AuditLogs { get; set; }
         public DbSet<TipoConta> TipoContas { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
@@ -24,6 +25,14 @@ namespace ApiBase.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Log gerados pelo Serilog
+            modelBuilder.Entity<SerilogEntry>().HasKey(s => s.Id);
+            modelBuilder.Entity<SerilogEntry>().Property(s => s.Exception).IsRequired(false);
+            modelBuilder.Entity<SerilogEntry>().Property(s => s.Properties).IsRequired(false);
+            modelBuilder.Entity<SerilogEntry>().Property(s => s.LogEvent).IsRequired(false);
+            modelBuilder.Entity<SerilogEntry>().Property(s => s.TimeStamp).HasColumnType("datetime");
+            modelBuilder.Entity<SerilogEntry>().Property(s => s.Level).HasMaxLength(16);
+
             // Log de alteração
             modelBuilder.Entity<AuditLogs>().HasKey(a => a.AuditLog_Id);
             modelBuilder.Entity<AuditLogs>().Property(a => a.Tipo).HasMaxLength(10).IsRequired();

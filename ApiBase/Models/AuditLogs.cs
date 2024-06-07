@@ -17,18 +17,22 @@
         public required string Color { get; set; }
     }
 
-    public class LogSerilog
-    {
-        public int Id { get; set; }
-        public required string MessageTemplate { get; set; }
-        public required string Level { get; set; }
-        public DateTime TimeStamp { get; set; }
-    }
-
     public class AdminDashboard
     {
         public required List<MetricasSistema> AnalyticSistema { get; set; }
-        public required List<LogSerilog> Logs { get; set; }
+        public List<SerilogEntry> Logs { get; set; }
         public required List<int> FonteTrafico { get; set; }
+    }
+
+    public class SerilogEntry
+    {
+        public int Id { get; set; }
+        public string Message { get; set; }
+        public string MessageTemplate { get; set; }
+        public string Level { get; set; }
+        public DateTime TimeStamp { get; set; }
+        public string? Exception { get; set; }
+        public string? Properties { get; set; }
+        public string? LogEvent { get; set; }
     }
 }

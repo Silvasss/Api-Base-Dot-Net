@@ -21,9 +21,10 @@ var builder = WebApplication.CreateBuilder(args);
 var logger = new LoggerConfiguration().WriteTo.MSSqlServer(
         connectionString: builder.Configuration.GetConnectionString("DefaultConnection"),
         sinkOptions: new MSSqlServerSinkOptions
-        {            
-            TableName = "Serilog",
-            AutoCreateSqlTable = true
+        {
+            AutoCreateSqlDatabase = false,
+            AutoCreateSqlTable = false,
+            TableName = "Logs"
         },
         restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Warning
     ).CreateLogger();
@@ -139,4 +140,4 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run(); 
+app.Run();
