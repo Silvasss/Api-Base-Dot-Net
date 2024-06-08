@@ -31,11 +31,6 @@ namespace ApiBase.Controllers.Instituicao
         {
             IEnumerable<CursoDto> curso = await _repository.Get(int.Parse(User.Claims.First(x => x.Type == "userId").Value));
 
-            if (!curso.Any())
-            {
-                return NotFound();
-            }
-
             return Ok(curso);
         }
 
