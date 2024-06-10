@@ -27,11 +27,6 @@ namespace ApiBase.Controllers.UsuarioLogado
         {
             IEnumerable<ExperienciaDto> experiencias = await _repository.GetAll(int.Parse(User.Claims.First(x => x.Type == "userId").Value));
 
-            if (!experiencias.Any())
-            {
-                return NotFound();
-            }
-
             return Ok(experiencias);
         }
 

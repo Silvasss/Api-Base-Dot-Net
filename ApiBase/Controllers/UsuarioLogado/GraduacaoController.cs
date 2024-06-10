@@ -27,11 +27,6 @@ namespace ApiBase.Controllers.UsuarioLogado
         {
             IEnumerable<GraduacaoDto> graduacoes = await _repository.GetAll(int.Parse(User.Claims.First(x => x.Type == "userId").Value));
 
-            if (!graduacoes.Any())
-            {
-                return NotFound();
-            }
-
             return Ok(graduacoes);
         }
 
