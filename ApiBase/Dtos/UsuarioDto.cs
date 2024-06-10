@@ -53,7 +53,7 @@ namespace ApiBase.Dtos
         public string PlusCode { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Vinculo é obrigatório")]
-        [StringLength(50, ErrorMessage = "Tamanho entre 4 a 50 caracteres", MinimumLength = 4)]
+        [StringLength(50, ErrorMessage = "Tamanho entre 3 a 50 caracteres", MinimumLength = 3)]
         public string Vinculo { get; set; } = string.Empty;
         public bool Ativo { get; set; }
         public DateTime? Inicio { get; set; }

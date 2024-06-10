@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ApiBase.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace ApiBase.Dtos
 {
@@ -30,5 +31,11 @@ namespace ApiBase.Dtos
         [StringLength(50, ErrorMessage = "Tamanho entre 4 a 50 caracteres", MinimumLength = 4)]
         public string Nome { get; set; } = string.Empty;
         public bool Ativo { get; set; }
+    }
+    public class ListaInstituicaoDto
+    {
+        public int Instituicao_Id { get; set; }
+        public required string Nome { get; set; }
+        public IEnumerable<CursoDto> Cursos { get; set; }
     }
 }

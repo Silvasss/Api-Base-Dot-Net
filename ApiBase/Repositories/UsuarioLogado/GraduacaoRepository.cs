@@ -11,7 +11,11 @@ namespace ApiBase.Repositories.UsuarioLogado
     public class GraduacaoRepository(IConfiguration config) : IGraduacaoRepository
     {
         private readonly DataContextEF _entityFramework = new(config);
-        private readonly Mapper _mapper = new(new MapperConfiguration(cfg => { cfg.CreateMap<Graduacao, GraduacaoDto>().ReverseMap(); }));
+        private readonly Mapper _mapper = new(new MapperConfiguration(cfg =>
+        {
+            cfg.CreateMap<Graduacao, GraduacaoDto>().ReverseMap();
+            cfg.CreateMap<Curso, CursoDto>().ReverseMap();
+        }));
 
         public async Task<IEnumerable<GraduacaoDto>> GetAll(int userId)
         {
@@ -75,6 +79,21 @@ namespace ApiBase.Repositories.UsuarioLogado
             }
 
             return false;
+        }
+
+        public async Task<IEnumerable<ListaInstituicaoDto>> ListaInstituicao()
+        {
+            IEnumerable<ListaInstituicaoDto> banco = await _entityFramework.Instituicao
+                .Select(i => new ListaInstituicaoDto
+                {
+                    Nome = i.Nome,
+                    Instituicao_Id = i.Instituicao_Id,
+                    Cursos = _mapper.Map<IEnumerable<CursoDto>>(i.Cursos.Where(c => c.Ativo == true))
+                }
+                )
+                .ToListAsync();
+
+            return banco;
         }
     }
 }
