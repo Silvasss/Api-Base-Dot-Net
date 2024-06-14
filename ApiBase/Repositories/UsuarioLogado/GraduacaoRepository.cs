@@ -13,13 +13,37 @@ namespace ApiBase.Repositories.UsuarioLogado
         private readonly DataContextEF _entityFramework = new(config);
         private readonly Mapper _mapper = new(new MapperConfiguration(cfg =>
         {
-            cfg.CreateMap<Graduacao, GraduacaoDto>().ReverseMap();
             cfg.CreateMap<Curso, CursoDto>().ReverseMap();
         }));
 
-        public async Task<IEnumerable<GraduacaoDto>> GetAll(int userId)
+        public async Task<ListaInfos> Get(int userId)
         {
-            return _mapper.Map<IEnumerable<GraduacaoDto>>(await _entityFramework.Graduacaos.Where(u => u.Usuario_Id == userId).ToListAsync());
+            ListaInfos resposta = new()
+            {
+                Graduacoes = await _entityFramework.Graduacaos
+                    .Where(u => u.Usuario_Id == userId)
+                    .Select(u => new GraduacaoDto
+                    {
+                        Graduacao_Id = u.Graduacao_Id,
+                        Situacao = u.Situacao,
+                        Tipo = u.Tipo,
+                        Inicio = u.Inicio,
+                        Fim = u.Fim,
+                        Curso_Id = u.Curso_Id,
+                        CursoNome = u.CursoNome,
+                        InstituicaoId = u.InstituicaoId,
+                        InstituicaoNome = u.InstituicaoNome
+                    }).ToListAsync(),
+                ListaInstituicoes = await _entityFramework.Instituicao
+                    .Select(i => new ListaInstituicaoDto
+                    {
+                        Nome = i.Nome,
+                        Instituicao_Id = i.Instituicao_Id,
+                        Cursos = _mapper.Map<IEnumerable<CursoDto>>(i.Cursos.Where(c => c.Ativo == true))
+                    }).ToListAsync()
+            };
+
+            return resposta;
         }
 
         public async Task<bool> Delete(int id, int userId)
@@ -44,15 +68,21 @@ namespace ApiBase.Repositories.UsuarioLogado
             Graduacao graduacaoDb = new()
             {
                 Situacao = graduacao.Situacao,
+                Tipo = graduacao.Tipo,
                 Inicio = graduacao.Inicio,
                 Fim = graduacao.Fim,
                 Usuario_Id = id,
-                Curso_Id = graduacao.Curso_Id
+                Curso_Id = graduacao.Curso_Id,
+                CursoNome = graduacao.CursoNome,
+                InstituicaoId = graduacao.InstituicaoId,
+                InstituicaoNome = graduacao.InstituicaoNome
             };
+
 
             Solicitacao solicitacaoModel = new()
             {
-                Instituicao_Id = graduacao.InstituicaoId
+                Instituicao_Id = graduacao.InstituicaoId,
+                Ativo = true
             };
 
             graduacaoDb.Solicitacao = solicitacaoModel;
@@ -79,21 +109,6 @@ namespace ApiBase.Repositories.UsuarioLogado
             }
 
             return false;
-        }
-
-        public async Task<IEnumerable<ListaInstituicaoDto>> ListaInstituicao()
-        {
-            IEnumerable<ListaInstituicaoDto> banco = await _entityFramework.Instituicao
-                .Select(i => new ListaInstituicaoDto
-                {
-                    Nome = i.Nome,
-                    Instituicao_Id = i.Instituicao_Id,
-                    Cursos = _mapper.Map<IEnumerable<CursoDto>>(i.Cursos.Where(c => c.Ativo == true))
-                }
-                )
-                .ToListAsync();
-
-            return banco;
         }
     }
 }

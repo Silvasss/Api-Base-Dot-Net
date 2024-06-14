@@ -15,29 +15,15 @@ namespace ApiBase.Controllers.UsuarioLogado
         private readonly IGraduacaoRepository _repository = repository;
 
         /// <summary>
-        /// Lista de graduações do usuário
+        /// Lista de informações
         /// </summary>
-        /// <response code="200">Lista de objetos Graduação</response>
+        /// <response code="200">Objeto</response>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<IEnumerable<GraduacaoDto>>> Get()
+        public async Task<ActionResult<ListaInfos>> Get()
         {
-            IEnumerable<GraduacaoDto> graduacoes = await _repository.GetAll(int.Parse(User.Claims.First(x => x.Type == "userId").Value));
-
-            return Ok(graduacoes);
-        }
-
-        /// <summary>
-        /// Lista de instituições e cursos
-        /// </summary>
-        /// <response code="200">Lista de objetos</response>
-        [HttpGet("lista")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesDefaultResponseType]
-        public async Task<ActionResult<IEnumerable<ListaInstituicaoDto>>> GetLista()
-        {
-            return Ok(await _repository.ListaInstituicao());
+            return Ok(await _repository.Get(int.Parse(User.Claims.First(x => x.Type == "userId").Value)));
         }
 
         /// <summary>

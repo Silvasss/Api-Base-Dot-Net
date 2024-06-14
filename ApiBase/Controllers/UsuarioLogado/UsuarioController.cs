@@ -15,15 +15,15 @@ namespace ApiBase.Controllers.UsuarioLogado
         private readonly IUsuarioRepository _repository = repository;
 
         /// <summary>
-        /// Retorna as informações do perfil
+        /// Retorna as informações geral do perfil
         /// </summary>
-        /// <response code="200">Objeto Usuario</response>
+        /// <response code="200">Objeto</response>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<UsuarioDto>> Get()
+        public async Task<ActionResult<UsuarioIndexDto>> Get()
         {
-            return await _repository.Get(int.Parse(User.Claims.First(x => x.Type == "userId").Value));
+            return Ok(await _repository.Get(int.Parse(User.Claims.First(x => x.Type == "userId").Value)));
         }
 
         /// <summary>
@@ -65,6 +65,40 @@ namespace ApiBase.Controllers.UsuarioLogado
         {
             await _repository.Delete(int.Parse(User.Claims.First(x => x.Type == "userId").Value));
 
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Retorna as configurações da conta
+        /// </summary>
+        /// <response code="200">Objeto</response>
+        [HttpGet("configuracoes")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<UsuarioDto>> Get2()
+        {
+            return Ok(await _repository.GetConfiguracoes(int.Parse(User.Claims.First(x => x.Type == "userId").Value)));
+        }
+
+        /// <summary>
+        /// Atualizar as configurações da conta
+        /// </summary>
+        /// <remarks>        
+        /// Exemplo de request:     
+        /// 
+        ///     {
+        ///         "Configuracoes": ['1', '2']
+        ///     } 
+        /// </remarks>
+        /// <param name="temp">Lista de string</param>
+        /// <response code="204">Atualizado</response>
+        [HttpPut("configuracoes")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesDefaultResponseType]
+        public async Task<IActionResult> Put2(List<string> temp)
+        {
+            await _repository.PutConfiguracoes(temp, int.Parse(User.Claims.First(x => x.Type == "userId").Value));
+                
             return NoContent();
         }
     }

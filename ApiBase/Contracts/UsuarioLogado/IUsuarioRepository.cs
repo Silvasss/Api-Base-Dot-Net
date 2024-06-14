@@ -1,12 +1,13 @@
 ﻿using ApiBase.Dtos;
-using ApiBase.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiBase.Contracts.UsuarioLogado
 {
     public interface IUsuarioRepository
     {
-        Task<ActionResult<UsuarioDto>> Get(int id);
+        Task<ActionResult<UsuarioIndexDto>> Get(int id);
+        Task<UsuarioDto> GetConfiguracoes(int userId);
+        Task<bool> PutConfiguracoes(List<string> temp, int userId);
         Task<bool> Put(UsuarioDto user);
         Task<bool> Delete(int id);
     }

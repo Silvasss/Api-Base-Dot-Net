@@ -44,6 +44,8 @@ namespace ApiBase.Repositories.UsuarioLogado
                 Empresa = experiencia.Empresa,
                 PlusCode = experiencia.PlusCode,
                 Vinculo = experiencia.Vinculo,
+                Funcao = experiencia.Funcao,
+                Responsabilidade = experiencia.Responsabilidade,
                 Ativo = experiencia.Ativo,
                 Inicio = experiencia.Inicio,
                 Fim = experiencia.Fim
@@ -65,6 +67,8 @@ namespace ApiBase.Repositories.UsuarioLogado
                 experienciaDb.Setor = experiencia.Setor;
                 experienciaDb.PlusCode = experiencia.PlusCode;
                 experienciaDb.Vinculo = experiencia.Vinculo;
+                experienciaDb.Funcao = experiencia.Funcao;
+                experienciaDb.Responsabilidade = experiencia.Responsabilidade;
                 experienciaDb.Ativo = experiencia.Ativo;
                 experienciaDb.Inicio = experiencia.Inicio;
                 experienciaDb.Fim = experiencia.Fim;

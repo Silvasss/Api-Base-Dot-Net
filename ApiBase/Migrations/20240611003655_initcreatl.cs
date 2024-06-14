@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ApiBase.Migrations
 {
     /// <inheritdoc />
-    public partial class createBanco : Migration
+    public partial class initcreatl : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -42,6 +42,25 @@ namespace ApiBase.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Auth", x => x.Auth_id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Logs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    MessageTemplate = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Level = table.Column<string>(type: "nvarchar(16)", maxLength: 16, nullable: false),
+                    TimeStamp = table.Column<DateTime>(type: "datetime", nullable: false),
+                    Exception = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Properties = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LogEvent = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Logs", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -168,12 +187,14 @@ namespace ApiBase.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Situacao = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Curso_Id = table.Column<int>(type: "int", nullable: false),
+                    CursoNome = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Inicio = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Fim = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "getdate()"),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, computedColumnSql: "getdate()"),
                     Usuario_Id = table.Column<int>(type: "int", nullable: false),
-                    InstituicaoId = table.Column<int>(type: "int", nullable: false)
+                    InstituicaoId = table.Column<int>(type: "int", nullable: false),
+                    InstitucaoNome = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -279,6 +300,9 @@ namespace ApiBase.Migrations
 
             migrationBuilder.DropTable(
                 name: "Experiencia");
+
+            migrationBuilder.DropTable(
+                name: "Logs");
 
             migrationBuilder.DropTable(
                 name: "Solicitacao");

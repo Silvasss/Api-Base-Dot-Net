@@ -81,9 +81,15 @@ namespace ApiBase.Data
             modelBuilder.Entity<Usuario>().Property(u => u.Nome).HasMaxLength(50).IsRequired();
             modelBuilder.Entity<Usuario>().Property(u => u.Pais).HasDefaultValue("Brasil").HasMaxLength(50).IsRequired();
             modelBuilder.Entity<Usuario>().Property(u => u.PlusCode).HasDefaultValue("RM88+4G Plano Diretor Sul, Palmas - State of Tocantins").HasMaxLength(150).IsRequired();
+            modelBuilder.Entity<Usuario>().Property(u => u.SobreMin).IsRequired();
+            modelBuilder.Entity<Usuario>().Property(u => u.CargoPrincipal).HasMaxLength(50).IsRequired();
+            modelBuilder.Entity<Usuario>().Property(u => u.Email).HasMaxLength(150);
+            modelBuilder.Entity<Usuario>().Property(u => u.PortfolioURL).HasMaxLength(150);
+            modelBuilder.Entity<Usuario>().Property(u => u.Experiencia).HasDefaultValue("Start Up").HasMaxLength(50).IsRequired();
             modelBuilder.Entity<Usuario>().Property(u => u.CreatedAt).HasDefaultValueSql("getdate()");
             modelBuilder.Entity<Usuario>().Property(u => u.UpdatedAt).HasComputedColumnSql("getdate()").ValueGeneratedOnAddOrUpdate();
             modelBuilder.Entity<Usuario>().Property(u => u.Tipo_Conta_Id).HasDefaultValue(2);
+            modelBuilder.Entity<Usuario>().Property(u => u.ConfiguracoesConta);
             modelBuilder.Entity<Usuario>().HasOne<Auth>(u => u.Auth).WithOne(a => a.UsuarioPerfil).HasForeignKey<Usuario>(u => u.Auth_Id).IsRequired();
 
             // Experiência
@@ -92,7 +98,9 @@ namespace ApiBase.Data
             modelBuilder.Entity<Experiencia>().Property(e => e.Empresa).HasMaxLength(50).IsRequired();
             modelBuilder.Entity<Experiencia>().Property(e => e.PlusCode).HasMaxLength(150).IsRequired();
             modelBuilder.Entity<Experiencia>().Property(e => e.Vinculo).HasMaxLength(50).IsRequired();
-            modelBuilder.Entity<Experiencia>().Property(e => e.Ativo).HasDefaultValue(true);
+            modelBuilder.Entity<Experiencia>().Property(e => e.Funcao).HasMaxLength(50).IsRequired();
+            modelBuilder.Entity<Experiencia>().Property(e => e.Responsabilidade).HasMaxLength(150).IsRequired();
+            modelBuilder.Entity<Experiencia>().Property(e => e.Ativo).HasColumnType("BIT").HasDefaultValue(true);
             modelBuilder.Entity<Experiencia>().Property(e => e.Inicio).IsRequired();
             modelBuilder.Entity<Experiencia>().Property(e => e.Fim);
             modelBuilder.Entity<Experiencia>().Property(e => e.CreatedAt).HasDefaultValueSql("getdate()");
@@ -103,6 +111,10 @@ namespace ApiBase.Data
             modelBuilder.Entity<Graduacao>().HasKey(g => g.Graduacao_Id);
             modelBuilder.Entity<Graduacao>().Property(g => g.Situacao).HasMaxLength(50).IsRequired();
             modelBuilder.Entity<Graduacao>().Property(g => g.Curso_Id).IsRequired();
+            modelBuilder.Entity<Graduacao>().Property(g => g.CursoNome).IsRequired();
+            modelBuilder.Entity<Graduacao>().Property(g => g.Tipo).IsRequired();
+            modelBuilder.Entity<Graduacao>().Property(g => g.InstituicaoId).IsRequired();
+            modelBuilder.Entity<Graduacao>().Property(g => g.InstituicaoNome).IsRequired();
             modelBuilder.Entity<Graduacao>().Property(g => g.Inicio).IsRequired();
             modelBuilder.Entity<Graduacao>().Property(g => g.Fim);
             modelBuilder.Entity<Graduacao>().Property(g => g.CreatedAt).HasDefaultValueSql("getdate()");
