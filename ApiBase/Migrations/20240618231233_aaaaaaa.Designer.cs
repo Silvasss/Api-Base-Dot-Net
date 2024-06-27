@@ -4,6 +4,7 @@ using ApiBase.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ApiBase.Migrations
 {
     [DbContext(typeof(DataContextEF))]
-    partial class DataContextEFModelSnapshot : ModelSnapshot
+    [Migration("20240618231233_aaaaaaa")]
+    partial class aaaaaaa
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -128,7 +131,8 @@ namespace ApiBase.Migrations
 
                     b.HasIndex("Instituicao_Id");
 
-                    b.HasIndex("Nome");
+                    b.HasIndex("Nome")
+                        .IsUnique();
 
                     b.ToTable("Curso");
                 });

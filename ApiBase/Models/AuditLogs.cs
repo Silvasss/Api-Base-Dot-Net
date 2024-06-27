@@ -8,22 +8,6 @@
         public DateTime CreatedDate { get; set; }
         public string Auth_Usuario { get; set; } = string.Empty;
     }
-
-    public class MetricasSistema
-    {
-        public required string Title { get; set; }
-        public required string Count { get; set; }
-        public double Percentage { get; set; }
-        public required string Color { get; set; }
-    }
-
-    public class AdminDashboard
-    {
-        public required List<MetricasSistema> AnalyticSistema { get; set; }
-        public List<SerilogEntry> Logs { get; set; }
-        public required List<int> FonteTrafico { get; set; }
-    }
-
     public class SerilogEntry
     {
         public int Id { get; set; }

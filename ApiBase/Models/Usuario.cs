@@ -37,13 +37,21 @@
         public Usuario? Usuario { get; set; }
         public int Usuario_Id { get; set; }
     }
+    public enum SituacaoGraduacao
+    {
+        Matriculado,
+        Trancado,
+        Concludente,
+        Concluído
+    }
     public partial class Graduacao
     {
         public int Graduacao_Id { get; set; }
-        public string? Situacao { get; set; }
+        public SituacaoGraduacao Situacao { get; set; }
         public int Curso_Id { get; set; }
         public string? CursoNome { get; set; }
         public string? Tipo { get; set; }
+        public Status Status { get; set; }
         public DateTime? Inicio { get; set; }
         public DateTime? Fim { get; set; }
         public DateTime? CreatedAt { get; set; }
@@ -54,15 +62,35 @@
         public int InstituicaoId { get; set; }
         public string? InstituicaoNome { get; set; }
     }
+    public enum Status
+    {
+        Pendente,
+        Aceito,
+        Recusado
+    }
     public partial class Solicitacao
     {
         public int Solicitacao_Id { get; set; }
-        public string Descricao { get; set; } = string.Empty;
+        public Status Status { get; set; }
         public int Instituicao_Id { get; set; }
-        public bool Ativo { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public Graduacao? Graduacao { get; set; }
         public int Graduacao_Id { get; set; }
+        public IEnumerable<RespostaSolicitacao>? Respostas { get; set; }
+    }
+    public partial class RespostaSolicitacao
+    {
+        public int Resposta_Id { get; set; }
+        public string ConteudoReposta { get; set; } = string.Empty;
+        public OrigemResposta Origem { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public Solicitacao? Solicitacao { get; set; }
+        public int Solicitacao_Id { get; set; }
+    }
+    public enum OrigemResposta
+    {
+        Usuario,
+        Instituicao
     }
 }

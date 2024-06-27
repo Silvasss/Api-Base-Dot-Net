@@ -21,7 +21,7 @@ namespace ApiBase.Controllers.Instituicao
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<InstituicaoDto>> Get()
+        public async Task<ActionResult<object>> Get()
         {
             return await _repository.Get(int.Parse(User.Claims.First(x => x.Type == "userId").Value));
         }

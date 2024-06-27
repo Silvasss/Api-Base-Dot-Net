@@ -1,38 +1,53 @@
 ﻿using ApiBase.Contracts;
 using ApiBase.Data;
-using ApiBase.Dtos;
 using ApiBase.Models;
 using ApiBase.Pagination;
-using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
 namespace ApiBase.Repositories
 {
-    public class VisitanteRepository(IConfiguration config) : IVisitanteRepository
+    public class VisitanteRepository(DataContextEF dataContext) : IVisitanteRepository
     {
-        private readonly DataContextEF _entityFramework = new(config);
-        private readonly Mapper _mapper = new(new MapperConfiguration(cfg =>
+        private readonly DataContextEF _entityFramework = dataContext;
+
+        public async Task<object> Get(int userId)
         {
-            cfg.CreateMap<Usuario, UsuarioDto>().ReverseMap();
-            cfg.CreateMap<Usuario, VisitanteDto>().ReverseMap();
-            cfg.CreateMap<Experiencia, ExperienciaDto>().ReverseMap();
-            cfg.CreateMap<Graduacao, GraduacaoDto>().ReverseMap();
-        }));
-
-        public async Task<VisitanteDto> Get(int userId)
-        {
-            VisitanteDto visitanteDb = _mapper.Map<VisitanteDto>(await _entityFramework.Usuarios.Where(u => u.Usuario_Id == userId && u.Tipo_Conta_Id == 2).FirstOrDefaultAsync());
-
-            if (visitanteDb == null)
-            {
-                return visitanteDb;
-            }
-
-            visitanteDb.Experiencias = _mapper.Map<IEnumerable<ExperienciaDto>>(await _entityFramework.Experiencia.Where(u => u.Usuario_Id == userId).ToListAsync());
-
-            visitanteDb.Graduacoes = _mapper.Map<IEnumerable<GraduacaoDto>>(await _entityFramework.Graduacaos.Where(u => u.Usuario_Id == userId).ToListAsync());
-
-            return visitanteDb;
+#pragma warning disable CS8603 // Possible null reference return.
+            return await _entityFramework.Usuarios
+                .AsNoTracking()
+                .Where(u => u.Usuario_Id == userId && u.Tipo_Conta_Id == 2)
+                .Include(u => u.Experiencias)
+                .Include(u => u.graduacoes)
+                .Select(r => new
+                {
+                    r.Nome,
+                    r.PlusCode,
+                    r.Pais,
+                    r.SobreMin,
+                    r.CargoPrincipal,
+                    r.PortfolioURL,
+                    Experiencias = r.Experiencias.Select(e => new
+                    {
+                        e.Empresa,
+                        e.PlusCode,
+                        e.Vinculo,
+                        e.Funcao,
+                        e.Inicio,
+                        e.Fim,
+                        e.Responsabilidade
+                    }),
+                    Graduacoes = r.graduacoes.Select(g => new
+                    {
+                        g.Situacao,
+                        g.Inicio,
+                        g.Fim,
+                        g.InstituicaoNome,
+                        g.CursoNome
+                    })
+                })
+                .AsSplitQuery()
+                .FirstOrDefaultAsync();
+#pragma warning restore CS8603 // Possible null reference return.
         }
 
         public async Task<PagedList<Usuario>> Index(VisitanteParameters visitanteParams)

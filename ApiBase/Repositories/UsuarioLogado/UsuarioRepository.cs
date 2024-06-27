@@ -2,15 +2,14 @@
 using ApiBase.Data;
 using ApiBase.Dtos;
 using ApiBase.Models;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 
 namespace ApiBase.Repositories.UsuarioLogado
 {
-    public class UsuarioRepository(IConfiguration config) : IUsuarioRepository
+    public class UsuarioRepository(DataContextEF dataContext) : IUsuarioRepository
     {
-        private readonly DataContextEF _entityFramework = new(config);
+        private readonly DataContextEF _entityFramework = dataContext;
 
         public async Task<bool> Delete(int id)
         {
@@ -25,53 +24,40 @@ namespace ApiBase.Repositories.UsuarioLogado
             return true;
         }
 
-        public async Task<ActionResult<UsuarioIndexDto>> Get(int id)
+        public async Task<object> Get(int id)
         {
-            UsuarioDto usuario = await _entityFramework.Usuarios.Where(u => u.Usuario_Id == id)
-                .Select(u => new UsuarioDto
+            return await _entityFramework.Usuarios
+                .AsNoTracking()
+                .Where(u => u.Usuario_Id == id)
+                .Include(u => u.Experiencias)
+                .Include(u => u.graduacoes)
+                .Select(r => new
                 {
-                    Nome = u.Nome,
-                    Pais = u.Pais,
-                    PlusCode = u.PlusCode,
-                    SobreMin = u.SobreMin,
-                    CargoPrincipal = u.CargoPrincipal,
-                    Email = u.Email,
-                    PortfolioURL = u.PortfolioURL,
-                    Experiencia = u.Experiencia,
+                    r.Nome,
+                    r.PlusCode,
+                    r.Pais,
+                    r.SobreMin,
+                    r.CargoPrincipal,
+                    r.PortfolioURL,
+                    r.Email,
+                    r.Experiencia,
+                    Emprego = r.Experiencias.Select(e => new
+                    {
+                        e.Funcao,
+                        e.Inicio,
+                        e.Fim,
+                        e.Responsabilidade
+                    }),
+                    Educacao = r.graduacoes.Select(g => new
+                    {
+                        g.Inicio,
+                        g.Fim,
+                        g.InstituicaoNome,
+                        g.CursoNome
+                    })
                 })
+                .AsSplitQuery()
                 .FirstAsync();
-
-            UsuarioIndexDto reposta = new()
-            {
-                Nome = usuario.Nome,
-                Pais = usuario.Pais,
-                PlusCode = usuario.PlusCode,
-                SobreMin = usuario.SobreMin,
-                CargoPrincipal = usuario.CargoPrincipal,
-                Email = usuario.Email,
-                PortfolioURL = usuario.PortfolioURL,
-                Experiencia = usuario.Experiencia,
-                Educacao = await _entityFramework.Graduacaos
-                    .Where(u => u.Usuario_Id == id)
-                    .Select(u => new GraduacaoDto
-                    {
-                        Tipo = u.Tipo,
-                        Inicio = u.Inicio,
-                        Fim = u.Fim,
-                        InstituicaoNome = u.InstituicaoNome
-                    }).ToListAsync(),
-                Emprego = await _entityFramework.Experiencia
-                    .Where(e => e.Usuario_Id == id)
-                    .Select(e => new ExperienciaDto
-                    {
-                        Funcao = e.Funcao,
-                        Inicio = e.Inicio,
-                        Fim = e.Fim,
-                        Responsabilidade = e.Responsabilidade
-                    }).ToListAsync()
-            };
-
-            return reposta;
         }
 
         public async Task<bool> Put(UsuarioDto user)
@@ -103,12 +89,14 @@ namespace ApiBase.Repositories.UsuarioLogado
             return true;
         }
 
-        public async Task<UsuarioDto> GetConfiguracoes(int id)
+        public async Task<object> GetConfiguracoes(int id)
         {
-            return await _entityFramework.Usuarios.Where(u => u.Usuario_Id == id)
-                .Select(u => new UsuarioDto
+            return await _entityFramework.Usuarios
+                .AsNoTracking()
+                .Where(u => u.Usuario_Id == id)
+                .Select(u => new
                 {
-                    ConfiguracoesConta = u.ConfiguracoesConta
+                    u.ConfiguracoesConta
                 })
                 .FirstAsync();
         }

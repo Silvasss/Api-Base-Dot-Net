@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ApiBase.Models;
+using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 
 namespace ApiBase.Dtos
 {
@@ -34,24 +36,6 @@ namespace ApiBase.Dtos
         public string Experiencia { get; set; } = string.Empty;
         public List<string>? ConfiguracoesConta { get; set; }
     }
-    public class VisitanteDto
-    {
-        public int Usuario_Id { get; set; }
-
-        [Required(ErrorMessage = "Nome é obrigatório")]
-        [StringLength(50, ErrorMessage = "Tamanho entre 4 a 50 caracteres", MinimumLength = 4)]
-        public string Nome { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "País é obrigatório")]
-        [StringLength(50, ErrorMessage = "Tamanho entre 4 a 50 caracteres", MinimumLength = 4)]
-        public string Pais { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "PlusCode é obrigatório")]
-        [StringLength(150, ErrorMessage = "Tamanho entre 4 a 150 caracteres", MinimumLength = 4)]
-        public string PlusCode { get; set; } = string.Empty;
-        public IEnumerable<ExperienciaDto>? Experiencias { get; set; }
-        public IEnumerable<GraduacaoDto>? Graduacoes { get; set; }
-    }
     public partial class ExperienciaDto
     {
         public int Experiencia_Id { get; set; }
@@ -86,10 +70,7 @@ namespace ApiBase.Dtos
     public partial class GraduacaoDto
     {
         public int Graduacao_Id { get; set; }
-
-        [Required(ErrorMessage = "Situacao é obrigatório")]
-        [StringLength(50, ErrorMessage = "Tamanho entre 4 a 50 caracteres", MinimumLength = 4)]
-        public string Situacao { get; set; } = string.Empty;
+        public string? Situacao { get; set; }
 
         [Required(ErrorMessage = "Tipo é obrigatório")]
         [StringLength(50, ErrorMessage = "Tamanho entre 4 a 50 caracteres", MinimumLength = 4)]
@@ -102,25 +83,23 @@ namespace ApiBase.Dtos
         public string? CursoNome { get; set; }
         public int InstituicaoId { get; set; }
         public string? InstituicaoNome { get; set; }
+        public int Solicitacao_Id { get; set; }
+
+        [StringLength(650, ErrorMessage = "Tamanho máximo 650 caracteres")]
+        public string ConteudoReposta { get; set; } = string.Empty;
     }
     public partial class SolicitacaoDto
     {
         public int Solicitacao_Id { get; set; }
-
-        [Required(ErrorMessage = "Descrição é obrigatório")]
-        [StringLength(50, ErrorMessage = "Tamanho entre 4 a 50 caracteres", MinimumLength = 4)]
-        public string Descricao { get; set; } = string.Empty;
-        public bool Ativo { get; set; }
+        public string? Status { get; set; }
         public DateTime? CreatedAt { get; set; }
+        public IEnumerable<RespostaSolicitacaoDto>? Respostas { get; set; }
     }
-    public partial class ListaInfos
+    public partial class RespostaSolicitacaoDto
     {
-        public required IEnumerable<ListaInstituicaoDto> ListaInstituicoes { get; set; }
-        public required IEnumerable<GraduacaoDto> Graduacoes { get; set; }
-    }
-    public partial class UsuarioIndexDto : UsuarioDto
-    {
-        public required IEnumerable<GraduacaoDto> Educacao { get; set; }
-        public required IEnumerable<ExperienciaDto> Emprego { get; set; }
+        public int Resposta_Id { get; set; }
+        public string ConteudoReposta { get; set; } = string.Empty;
+        public OrigemResposta Origem { get; set; }
+        public DateTime? CreatedAt { get; set; }
     }
 }

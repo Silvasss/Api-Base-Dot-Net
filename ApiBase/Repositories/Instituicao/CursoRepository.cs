@@ -8,10 +8,9 @@ using System.Data;
 
 namespace ApiBase.Repositories.Instituicao
 {
-    public class CursoRepository(IConfiguration config) : ICursoRepository
+    public class CursoRepository(DataContextEF dataContext) : ICursoRepository
     {
-        private readonly DataContextEF _entityFramework = new(config);
-        private readonly Mapper _mapper = new(new MapperConfiguration(cfg => { cfg.CreateMap<Curso, CursoDto>().ReverseMap(); }));
+        private readonly DataContextEF _entityFramework = dataContext;
 
         public async Task<bool> Delete(int cursoId, int id)
         {
@@ -30,9 +29,18 @@ namespace ApiBase.Repositories.Instituicao
             return false;
         }
 
-        public async Task<IEnumerable<CursoDto>> Get(int id)
+        public async Task<IEnumerable<object>> Get(int id)
         {
-            return _mapper.Map<IEnumerable<CursoDto>>(await _entityFramework.Curso.Where(c => c.Instituicao_Id == id).ToListAsync());
+            return await _entityFramework.Curso
+                 .AsNoTracking()
+                 .Where(c => c.Instituicao_Id == id)
+                 .Select(c => new
+                 {
+                     c.Curso_Id,
+                     c.Nome,
+                     c.Ativo
+                 })
+                 .ToListAsync();
         }
 
         public async Task<bool> Post(CursoDto curso, int id)
@@ -40,7 +48,8 @@ namespace ApiBase.Repositories.Instituicao
             Curso cursoDb = new()
             {
                 Instituicao_Id = id,
-                Nome = curso.Nome
+                Nome = curso.Nome,
+                Ativo = curso.Ativo,
             };
 
             await _entityFramework.AddAsync(cursoDb);

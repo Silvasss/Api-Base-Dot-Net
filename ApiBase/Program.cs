@@ -2,17 +2,20 @@ using ApiBase.Contracts;
 using ApiBase.Contracts.Admin;
 using ApiBase.Contracts.Instituicao;
 using ApiBase.Contracts.UsuarioLogado;
+using ApiBase.Data;
 using ApiBase.Repositories;
 using ApiBase.Repositories.Admin;
 using ApiBase.Repositories.Instituicao;
 using ApiBase.Repositories.UsuarioLogado;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Sinks.MSSqlServer;
 using System.Reflection;
 using System.Text;
+using System.Text.Json.Serialization;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -74,11 +77,12 @@ builder.Services.AddCors((options) =>
         corsBuilder.WithOrigins("http://localhost:3000")
             .AllowAnyMethod()
             .AllowAnyHeader()
+            .WithExposedHeaders("x-pagination") // Exponha o cabeçalho x-pagination
             .AllowCredentials();
     });
     options.AddPolicy("ProdCors", (corsBuilder) =>
     {
-        corsBuilder.WithOrigins("https://minharefeicao.com/")
+        corsBuilder.WithOrigins("http://localhost:3000")
             .WithMethods("POST", "PUT", "DELETE", "GET")
             .AllowAnyHeader()
             .AllowCredentials();
@@ -109,6 +113,13 @@ builder.Services.AddAuthorization(options =>
 
     options.AddPolicy("UsuarioOnly", policy => policy.RequireRole("usuario"));
 });
+
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+});
+
+builder.Services.AddDbContext<DataContextEF>(optionsBuilder => optionsBuilder.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), optionsBuilder => optionsBuilder.EnableRetryOnFailure()));
 
 builder.Services.AddScoped<IVisitanteRepository, VisitanteRepository>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();

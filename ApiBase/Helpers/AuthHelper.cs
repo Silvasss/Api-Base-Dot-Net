@@ -13,10 +13,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ApiBase.Helpers
 {
-    public class AuthHelper(IConfiguration config)
+    public class AuthHelper(IConfiguration config, DataContextEF dataContext)
     {
         private readonly IConfiguration _config = config;
-        private readonly DataContextEF _entityFramework = new(config);
+        private readonly DataContextEF _entityFramework = dataContext;
 
         public byte[] GetPasswordHash(string password, byte[] passwordSalt)
         {

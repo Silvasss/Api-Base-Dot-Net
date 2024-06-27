@@ -2,48 +2,54 @@
 using ApiBase.Data;
 using ApiBase.Dtos;
 using ApiBase.Models;
-using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using System.Data;
 
 namespace ApiBase.Repositories.UsuarioLogado
 {
-    public class GraduacaoRepository(IConfiguration config) : IGraduacaoRepository
+    public class GraduacaoRepository(DataContextEF dataContext) : IGraduacaoRepository
     {
-        private readonly DataContextEF _entityFramework = new(config);
-        private readonly Mapper _mapper = new(new MapperConfiguration(cfg =>
-        {
-            cfg.CreateMap<Curso, CursoDto>().ReverseMap();
-        }));
+        private readonly DataContextEF _entityFramework = dataContext;
 
-        public async Task<ListaInfos> Get(int userId)
+        public async Task<object> Get(int userId)
         {
-            ListaInfos resposta = new()
+            return new Dictionary<string, object>
             {
-                Graduacoes = await _entityFramework.Graduacaos
+                {
+                    "graduacoes", await _entityFramework.Graduacaos
+                    .AsNoTracking()
                     .Where(u => u.Usuario_Id == userId)
-                    .Select(u => new GraduacaoDto
-                    {
-                        Graduacao_Id = u.Graduacao_Id,
-                        Situacao = u.Situacao,
-                        Tipo = u.Tipo,
-                        Inicio = u.Inicio,
-                        Fim = u.Fim,
-                        Curso_Id = u.Curso_Id,
-                        CursoNome = u.CursoNome,
-                        InstituicaoId = u.InstituicaoId,
-                        InstituicaoNome = u.InstituicaoNome
-                    }).ToListAsync(),
-                ListaInstituicoes = await _entityFramework.Instituicao
-                    .Select(i => new ListaInstituicaoDto
-                    {
-                        Nome = i.Nome,
-                        Instituicao_Id = i.Instituicao_Id,
-                        Cursos = _mapper.Map<IEnumerable<CursoDto>>(i.Cursos.Where(c => c.Ativo == true))
-                    }).ToListAsync()
+                    .Select(u => new
+                        {
+                            u.Graduacao_Id,
+                            Situacao = u.Situacao.ToString(),
+                            u.Tipo,
+                            u.Inicio,
+                            u.Fim,
+                            u.Curso_Id,
+                            u.CursoNome,
+                            u.InstituicaoId,
+                            u.InstituicaoNome
+                        }
+                    ).ToListAsync()
+                },
+                {
+                    "listaInstituicoes", await _entityFramework.Instituicao
+                    .AsNoTracking()
+                    .Select(i => new 
+                        {
+                            i.Nome,
+                            i.Instituicao_Id,
+                            Cursos = i.Cursos.Where(c => c.Ativo == true)
+                                .Select(c => new
+                                {
+                                    c.Curso_Id,
+                                    c.Nome,
+                                    c.Ativo
+                                })
+                        }
+                    ).ToListAsync()
+                }
             };
-
-            return resposta;
         }
 
         public async Task<bool> Delete(int id, int userId)
@@ -67,7 +73,7 @@ namespace ApiBase.Repositories.UsuarioLogado
         {
             Graduacao graduacaoDb = new()
             {
-                Situacao = graduacao.Situacao,
+                Situacao = (SituacaoGraduacao)Enum.Parse(typeof(SituacaoGraduacao), graduacao.Situacao),
                 Tipo = graduacao.Tipo,
                 Inicio = graduacao.Inicio,
                 Fim = graduacao.Fim,
@@ -78,11 +84,9 @@ namespace ApiBase.Repositories.UsuarioLogado
                 InstituicaoNome = graduacao.InstituicaoNome
             };
 
-
             Solicitacao solicitacaoModel = new()
             {
-                Instituicao_Id = graduacao.InstituicaoId,
-                Ativo = true
+                Instituicao_Id = graduacao.InstituicaoId
             };
 
             graduacaoDb.Solicitacao = solicitacaoModel;
@@ -100,15 +104,51 @@ namespace ApiBase.Repositories.UsuarioLogado
 
             if (graduacaoDb != null)
             {
-                graduacaoDb.Situacao = graduacao.Situacao;
-
-                if (await _entityFramework.SaveChangesAsync() > 0)
+                if (!String.IsNullOrEmpty(graduacao.ConteudoReposta))
                 {
-                    return true;
-                }
-            }
+                    RespostaSolicitacao local = new()
+                    {
+                        ConteudoReposta = graduacao.ConteudoReposta,
+                        Origem = OrigemResposta.Usuario,
+                        Solicitacao_Id = graduacao.Solicitacao_Id
+                    };
 
-            return false;
+                    await _entityFramework.AddAsync(local);
+                }
+
+                graduacaoDb.Situacao = (SituacaoGraduacao)Enum.Parse(typeof(SituacaoGraduacao), graduacao.Situacao);
+
+                await _entityFramework.SaveChangesAsync();
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public async Task<object> GetSolicitacao(int id)
+        {
+            return await _entityFramework.Solicitacao
+                .AsNoTracking()
+                .Where(s => s.Graduacao_Id == id)
+                .Include(s => s.Respostas)
+                .Select(r => new
+                {
+                    r.Solicitacao_Id,
+                    status = r.Status.ToString(),
+                    r.CreatedAt,
+                    resposta = r.Respostas
+                        .Select(n => new
+                        {
+                            n.Resposta_Id,
+                            n.ConteudoReposta,
+                            n.Origem,
+                            n.CreatedAt
+                        })
+                })
+                .FirstAsync();
         }
     }
 }

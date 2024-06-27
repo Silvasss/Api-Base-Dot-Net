@@ -2,20 +2,34 @@
 using ApiBase.Data;
 using ApiBase.Dtos;
 using ApiBase.Models;
-using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 
 namespace ApiBase.Repositories.UsuarioLogado
 {
-    public class ExperienciaRepository(IConfiguration config) : IExperienciaRepository
+    public class ExperienciaRepository(DataContextEF dataContext) : IExperienciaRepository
     {
-        private readonly DataContextEF _entityFramework = new(config);
-        private readonly Mapper _mapper = new(new MapperConfiguration(cfg => { cfg.CreateMap<Experiencia, ExperienciaDto>().ReverseMap(); }));
+        private readonly DataContextEF _entityFramework = dataContext;
 
-        public async Task<IEnumerable<ExperienciaDto>> GetAll(int userId)
+        public async Task<IEnumerable<object>> GetAll(int userId)
         {
-            return _mapper.Map<IEnumerable<ExperienciaDto>>(await _entityFramework.Experiencia.Where(u => u.Usuario_Id == userId).ToListAsync());
+            return await _entityFramework.Experiencia
+                .AsNoTracking()
+                .Where(u => u.Usuario_Id == userId)
+                .Select(e => new
+                {
+                    e.Experiencia_Id,
+                    e.Setor,
+                    e.Empresa,
+                    e.PlusCode,
+                    e.Vinculo,
+                    e.Funcao,
+                    e.Inicio,
+                    e.Fim,
+                    e.Responsabilidade,
+                    e.Ativo
+                })
+                .ToListAsync();
         }
 
         public async Task<bool> Delete(int id, int Experienciaid)

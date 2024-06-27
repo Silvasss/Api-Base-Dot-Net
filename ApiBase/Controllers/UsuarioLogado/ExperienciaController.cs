@@ -23,11 +23,9 @@ namespace ApiBase.Controllers.UsuarioLogado
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<IEnumerable<ExperienciaDto>>> GetAll()
+        public async Task<ActionResult<IEnumerable<object>>> GetAll()
         {
-            IEnumerable<ExperienciaDto> experiencias = await _repository.GetAll(int.Parse(User.Claims.First(x => x.Type == "userId").Value));
-
-            return Ok(experiencias);
+            return Ok(await _repository.GetAll(int.Parse(User.Claims.First(x => x.Type == "userId").Value)));
         }
 
         /// <summary>

@@ -21,7 +21,7 @@ namespace ApiBase.Controllers.UsuarioLogado
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<UsuarioIndexDto>> Get()
+        public async Task<ActionResult<object>> Get()
         {
             return Ok(await _repository.Get(int.Parse(User.Claims.First(x => x.Type == "userId").Value)));
         }
@@ -47,7 +47,7 @@ namespace ApiBase.Controllers.UsuarioLogado
         [ProducesDefaultResponseType]
         public async Task<IActionResult> Put(UsuarioDto user)
         {
-            user.Usuario_Id = int.Parse(User.Claims.First(x => x.Type == "userId").Value);
+            user.Usuario_Id = int.Parse(User.Claims.First(x => x.Type == "userId").Value);                     
 
             await _repository.Put(user);
 
@@ -75,7 +75,7 @@ namespace ApiBase.Controllers.UsuarioLogado
         [HttpGet("configuracoes")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<UsuarioDto>> Get2()
+        public async Task<ActionResult<object>> Get2()
         {
             return Ok(await _repository.GetConfiguracoes(int.Parse(User.Claims.First(x => x.Type == "userId").Value)));
         }

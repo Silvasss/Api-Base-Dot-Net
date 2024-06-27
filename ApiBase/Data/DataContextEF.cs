@@ -3,10 +3,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ApiBase.Data
 {
-    public class DataContextEF(IConfiguration config) : DbContext
+    public class DataContextEF(DbContextOptions options) : DbContext(options)
     {
-        private readonly IConfiguration _config = config;
-
         public DbSet<Auth> Auth { get; set; }
         public DbSet<SerilogEntry> Logs { get; set; }
         public DbSet<AuditLogs> AuditLogs { get; set; }
@@ -17,11 +15,7 @@ namespace ApiBase.Data
         public DbSet<Solicitacao> Solicitacao { get; set; }
         public DbSet<InstituicaoEF> Instituicao { get; set; }
         public DbSet<Curso> Curso { get; set; }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured) optionsBuilder.UseSqlServer(_config.GetConnectionString("DefaultConnection"), optionsBuilder => optionsBuilder.EnableRetryOnFailure());
-        }
+        public DbSet<RespostaSolicitacao> RespostasSolicitacao { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -70,7 +64,7 @@ namespace ApiBase.Data
             // Curso da instituição
             modelBuilder.Entity<Curso>().HasKey(c => c.Curso_Id);
             modelBuilder.Entity<Curso>().Property(c => c.Nome).HasMaxLength(50).IsRequired();
-            modelBuilder.Entity<Curso>().HasIndex(c => c.Nome).IsUnique(true);
+            modelBuilder.Entity<Curso>().HasIndex(c => c.Nome);
             modelBuilder.Entity<Curso>().Property(c => c.Ativo).HasDefaultValue(true);
             modelBuilder.Entity<Curso>().Property(c => c.CreatedAt).HasDefaultValueSql("getdate()");
             modelBuilder.Entity<Curso>().Property(c => c.UpdatedAt).HasComputedColumnSql("getdate()").ValueGeneratedOnAddOrUpdate();
@@ -109,10 +103,11 @@ namespace ApiBase.Data
 
             // Graduação
             modelBuilder.Entity<Graduacao>().HasKey(g => g.Graduacao_Id);
-            modelBuilder.Entity<Graduacao>().Property(g => g.Situacao).HasMaxLength(50).IsRequired();
+            modelBuilder.Entity<Graduacao>().Property(g => g.Situacao);
             modelBuilder.Entity<Graduacao>().Property(g => g.Curso_Id).IsRequired();
             modelBuilder.Entity<Graduacao>().Property(g => g.CursoNome).IsRequired();
             modelBuilder.Entity<Graduacao>().Property(g => g.Tipo).IsRequired();
+            modelBuilder.Entity<Graduacao>().Property(g => g.Status);
             modelBuilder.Entity<Graduacao>().Property(g => g.InstituicaoId).IsRequired();
             modelBuilder.Entity<Graduacao>().Property(g => g.InstituicaoNome).IsRequired();
             modelBuilder.Entity<Graduacao>().Property(g => g.Inicio).IsRequired();
@@ -123,12 +118,18 @@ namespace ApiBase.Data
 
             // Solicitação
             modelBuilder.Entity<Solicitacao>().HasKey(s => s.Solicitacao_Id);
-            modelBuilder.Entity<Solicitacao>().Property(s => s.Descricao).HasMaxLength(50);
+            modelBuilder.Entity<Solicitacao>().Property(s => s.Status);
             modelBuilder.Entity<Solicitacao>().Property(s => s.Instituicao_Id).IsRequired();
-            modelBuilder.Entity<Solicitacao>().Property(s => s.Ativo).HasDefaultValue(true);
             modelBuilder.Entity<Solicitacao>().Property(s => s.CreatedAt).HasDefaultValueSql("getdate()");
-            modelBuilder.Entity<Solicitacao>().Property(s => s.UpdatedAt).HasComputedColumnSql("getdate()").ValueGeneratedOnAddOrUpdate();
+            modelBuilder.Entity<Solicitacao>().Property(s => s.UpdatedAt).HasDefaultValueSql("getdate()").IsRequired();
             modelBuilder.Entity<Solicitacao>().HasOne<Graduacao>(s => s.Graduacao).WithOne(g => g.Solicitacao).HasForeignKey<Solicitacao>(s => s.Graduacao_Id).IsRequired();
+
+            // Resposta da solicitação
+            modelBuilder.Entity<RespostaSolicitacao>().HasKey(s => s.Resposta_Id);
+            modelBuilder.Entity<RespostaSolicitacao>().Property(s => s.ConteudoReposta).HasMaxLength(650);
+            modelBuilder.Entity<RespostaSolicitacao>().Property(s => s.Origem);
+            modelBuilder.Entity<RespostaSolicitacao>().Property(s => s.CreatedAt).HasDefaultValueSql("getdate()");
+            modelBuilder.Entity<RespostaSolicitacao>().HasOne<Solicitacao>(s => s.Solicitacao).WithMany(g => g.Respostas).HasForeignKey(s => s.Solicitacao_Id).IsRequired();
         }
     }
 }

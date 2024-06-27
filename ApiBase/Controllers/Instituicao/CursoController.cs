@@ -27,11 +27,9 @@ namespace ApiBase.Controllers.Instituicao
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<IEnumerable<CursoDto>>> Get()
+        public async Task<ActionResult<IEnumerable<object>>> Get()
         {
-            IEnumerable<CursoDto> curso = await _repository.Get(int.Parse(User.Claims.First(x => x.Type == "userId").Value));
-
-            return Ok(curso);
+            return Ok(await _repository.Get(int.Parse(User.Claims.First(x => x.Type == "userId").Value)));
         }
 
         /// <summary>

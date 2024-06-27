@@ -22,7 +22,7 @@ namespace ApiBase.Controllers.Administrado
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<AdminDashboard>> Index()
+        public async Task<ActionResult<object>> Index()
         {
             return Ok(await _repository.Get());
         }
@@ -31,10 +31,10 @@ namespace ApiBase.Controllers.Administrado
         /// Lista do Serilog
         /// </summary>
         /// <response code="200">Objeto</response>
-        [HttpGet("/admin/log")]
+        [HttpGet("log")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<SerilogEntry>> GetSerilog()
+        public async Task<ActionResult<object>> Get1()
         {
             return Ok(await _repository.GetAllLogs());
         }
@@ -43,24 +43,48 @@ namespace ApiBase.Controllers.Administrado
         /// Lista de instituições cadastradas 
         /// </summary>
         /// <response code="200">Objeto</response>
-        [HttpGet("/admin/instituicoes")]
+        [HttpGet("instituicoes")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<InstituicaoEF>> GetInstituicao()
+        public async Task<ActionResult<object>> Get2()
         {
             return Ok(await _repository.GetAllInstituicao());
         }
 
         /// <summary>
-        /// Lista de usuários 
+        /// Informções da instituição 
         /// </summary>
         /// <response code="200">Objeto</response>
-        [HttpGet("/admin/usuarios")]
+        [HttpGet("instituicao/info/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<InstituicaoEF>> GetUsuarios()
+        public async Task<ActionResult<object>> Get3(int id)
         {
-            return Ok(await _repository.GetAllUsuarios());
+            return Ok(await _repository.GetInfoInstituicao(id));
+        }
+
+        /// <summary>
+        /// Lista de usuários
+        /// </summary>
+        /// <response code="200">Objeto</response>
+        [HttpGet("usuarios")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<object>> GetUsuarios()
+        {
+            return Ok(await _repository.GetAllUsuarios(int.Parse(User.Claims.First(x => x.Type == "userId").Value)));
+        }
+
+        /// <summary>
+        /// Perfil do usuário
+        /// </summary>
+        /// <response code="200">Objeto</response>
+        [HttpGet("usuario/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<object>> GetUsuario(int id)
+        {
+            return Ok(await _repository.GetUsuario(id));
         }
 
         /// <summary>
@@ -100,7 +124,7 @@ namespace ApiBase.Controllers.Administrado
         /// <param name="roleId"></param>
         /// <response code="204">Atualizado</response>
         /// <response code="404">Não encontrado</response>
-        [HttpPut("{userId}&{roleId}")]
+        [HttpPut("usuario/{userId}&{roleId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
@@ -115,12 +139,12 @@ namespace ApiBase.Controllers.Administrado
         }
 
         /// <summary>
-        /// Excluir uma conta
+        /// Excluir uma conta do tipo instituição
         /// </summary>
         /// <param name="userId"></param>
         /// <response code="204">Apagado</response>
         /// <response code="404">Não encontrado</response>
-        [HttpDelete("/admin/usuario/{userId}")]
+        [HttpDelete("{userId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
@@ -132,6 +156,41 @@ namespace ApiBase.Controllers.Administrado
             }
 
             return NotFound();
+        }
+
+        /// <summary>
+        /// Excluir uma conta do tipo usuário
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <response code="204">Apagado</response>
+        /// <response code="404">Não encontrado</response>
+        [HttpDelete("usuario/{userId}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<IActionResult> Delete2(int userId)
+        {
+            if (await _repository.DeleteUsuario(userId))
+            {
+                return NoContent();
+            }
+
+            return NotFound();
+        }
+
+        /// <summary>
+        /// População do banco
+        /// </summary>
+        /// <param name="quantidade">Quantidade de objetos</param>
+        /// <response code="201">Criado</response>
+        [HttpPost("{quantidade}")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesDefaultResponseType]
+        public async Task<IActionResult> Post(int quantidade)
+        {
+            await _repository.GerarPopulacao(quantidade);
+
+            return Created();
         }
     }
 }

@@ -21,9 +21,21 @@ namespace ApiBase.Controllers.UsuarioLogado
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<ListaInfos>> Get()
+        public async Task<ActionResult<object>> Get()
         {
             return Ok(await _repository.Get(int.Parse(User.Claims.First(x => x.Type == "userId").Value)));
+        }
+
+        /// <summary>
+        /// Informações da solicitação
+        /// </summary>
+        /// <response code="200">Objeto</response>
+        [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<object>> Get2(int id)
+        {
+            return Ok(await _repository.GetSolicitacao(id));
         }
 
         /// <summary>

@@ -2,20 +2,26 @@
 using ApiBase.Data;
 using ApiBase.Dtos;
 using ApiBase.Models;
-using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 
 namespace ApiBase.Repositories.Instituicao
 {
-    public class InstituicaoRepository(IConfiguration config) : IInstituicaoRepository
+    public class InstituicaoRepository(DataContextEF dataContext) : IInstituicaoRepository
     {
-        private readonly DataContextEF _entityFramework = new(config);
-        private readonly Mapper _mapper = new(new MapperConfiguration(cfg => { cfg.CreateMap<InstituicaoEF, InstituicaoDto>().ReverseMap(); }));
+        private readonly DataContextEF _entityFramework = dataContext;
 
-        public async Task<InstituicaoDto> Get(int userId)
+        public async Task<object> Get(int userId)
         {
-            return _mapper.Map<InstituicaoDto>(await _entityFramework.Instituicao.Where(i => i.Instituicao_Id == userId).FirstAsync());
+            return await _entityFramework.Instituicao
+                .AsNoTracking()
+                .Where(i => i.Instituicao_Id == userId)
+                .Select(i => new
+                {
+                    i.Nome,
+                    i.PlusCode
+                })
+                .FirstAsync();
         }
 
         public async Task<bool> Put(InstituicaoDto instituicao, int id)

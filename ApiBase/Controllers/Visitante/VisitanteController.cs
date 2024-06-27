@@ -23,7 +23,7 @@ namespace ApiBase.Controllers.Visitante
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<IEnumerable<UsuarioDto>>> Index([FromQuery] VisitanteParameters visitanteParams)
+        public async Task<ActionResult<IEnumerable<object>>> Index([FromQuery] VisitanteParameters visitanteParams)
         {
             var usuarios = await _repository.Index(visitanteParams);
 
@@ -44,12 +44,14 @@ namespace ApiBase.Controllers.Visitante
                 return NotFound();
             }
 
-            return usuarios.Select(user => new UsuarioDto
+            return usuarios.Select(user => new 
             {
-                Usuario_Id = user.Usuario_Id,
-                Nome = user.Nome,
-                Pais = user.Pais,
-                PlusCode = user.PlusCode
+                user.Usuario_Id,
+                user.Nome,
+                user.Pais,
+                user.PlusCode,
+                user.SobreMin,
+                user.CargoPrincipal
             }).ToList();
         }
 
@@ -61,9 +63,9 @@ namespace ApiBase.Controllers.Visitante
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<VisitanteDto>> Get(int userId)
+        public async Task<ActionResult<object>> Get(int userId)
         {
-            VisitanteDto visitanteRetorno = await _repository.Get(userId);
+            var visitanteRetorno = await _repository.Get(userId);
 
             if (visitanteRetorno == null)
             {

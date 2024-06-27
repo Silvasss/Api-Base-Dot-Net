@@ -14,10 +14,10 @@ namespace ApiBase.Controllers
     [Route("auth")]
     [ApiController]
     [Produces("application/json")]
-    public class AuthController(IConfiguration config) : ControllerBase
+    public class AuthController(DataContextEF dataContext, IConfiguration config) : ControllerBase
     {
-        private readonly DataContextEF _entityFramework = new(config);
-        private readonly AuthHelper _authHelper = new(config);
+        private readonly DataContextEF _entityFramework = dataContext;
+        private readonly AuthHelper _authHelper = new(config, dataContext);
 
         /// <summary>
         /// Registrar um novo usuário
