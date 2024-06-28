@@ -1,5 +1,5 @@
 ﻿using ApiBase.Dtos;
-using ApiBase.Models;
+using ApiBase.Pagination;
 
 namespace ApiBase.Contracts.Instituicao
 {

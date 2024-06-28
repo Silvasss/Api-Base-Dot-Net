@@ -1,8 +1,10 @@
 ﻿using ApiBase.Contracts.Admin;
 using ApiBase.Dtos;
 using ApiBase.Models;
+using ApiBase.Pagination;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace ApiBase.Controllers.Administrado
 {
@@ -34,9 +36,28 @@ namespace ApiBase.Controllers.Administrado
         [HttpGet("log")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<object>> Get1()
+        public async Task<ActionResult<IEnumerable<object>>> Get1([FromQuery] VisitanteParameters visitanteParams)
         {
-            return Ok(await _repository.GetAllLogs());
+            var logs = await _repository.GetAllLogs(visitanteParams);
+
+            var metadata = new
+            {
+                logs.TotalCount,
+                logs.PageSize,
+                logs.CurrentPage,
+                logs.TotalPages,
+                logs.HasNext,
+                logs.HasPrevious
+            };
+
+            Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+            if (logs is null || !logs.Any())
+            {
+                return NotFound();
+            }
+
+            return logs;
         }
 
         /// <summary>
@@ -46,9 +67,28 @@ namespace ApiBase.Controllers.Administrado
         [HttpGet("instituicoes")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<object>> Get2()
+        public async Task<ActionResult<IEnumerable<object>>> Get2([FromQuery] VisitanteParameters visitanteParams)
         {
-            return Ok(await _repository.GetAllInstituicao());
+            var retorno = await _repository.GetAllInstituicao(visitanteParams);
+
+            var metadata = new
+            {
+                retorno.TotalCount,
+                retorno.PageSize,
+                retorno.CurrentPage,
+                retorno.TotalPages,
+                retorno.HasNext,
+                retorno.HasPrevious
+            };
+
+            Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+            if (retorno is null || !retorno.Any())
+            {
+                return NotFound();
+            }
+
+            return retorno;
         }
 
         /// <summary>
@@ -70,9 +110,28 @@ namespace ApiBase.Controllers.Administrado
         [HttpGet("usuarios")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<object>> GetUsuarios()
+        public async Task<ActionResult<IEnumerable<object>>> GetUsuarios([FromQuery] VisitanteParameters visitanteParams)
         {
-            return Ok(await _repository.GetAllUsuarios(int.Parse(User.Claims.First(x => x.Type == "userId").Value)));
+            var retorno = await _repository.GetAllUsuarios(visitanteParams, int.Parse(User.Claims.First(x => x.Type == "userId").Value));
+
+            var metadata = new
+            {
+                retorno.TotalCount,
+                retorno.PageSize,
+                retorno.CurrentPage,
+                retorno.TotalPages,
+                retorno.HasNext,
+                retorno.HasPrevious
+            };
+
+            Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+            if (retorno is null || !retorno.Any())
+            {
+                return NotFound();
+            }
+
+            return retorno;
         }
 
         /// <summary>

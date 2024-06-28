@@ -1,14 +1,15 @@
 ﻿using ApiBase.Dtos;
+using ApiBase.Pagination;
 
 namespace ApiBase.Contracts.Admin
 {
     public interface IAdminRepository
     {
         Task<object> Get();
-        Task<IEnumerable<object>> GetAllLogs();
-        Task<IEnumerable<object>> GetAllInstituicao();
+        Task<PagedList<object>> GetAllLogs(VisitanteParameters visitanteParams);
+        Task<PagedList<object>> GetAllInstituicao(VisitanteParameters visitanteParams);
         Task<object> GetInfoInstituicao(int id);
-        Task<IEnumerable<object>> GetAllUsuarios(int userId);
+        Task<PagedList<object>> GetAllUsuarios(VisitanteParameters visitanteParams, int userId);
         Task<object> GetUsuario(int id);
         Task<bool> Post(InstituicaoDtoCreate instituicaoInsert);
         Task<bool> Delete(int userId);

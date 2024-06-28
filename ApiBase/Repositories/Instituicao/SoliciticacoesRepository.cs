@@ -93,9 +93,14 @@ namespace ApiBase.Repositories.Instituicao
                     r.Nome,
                     r.PlusCode,
                     r.Pais,
+                    r.CargoPrincipal,
+                    r.PortfolioURL,
                     r.Usuario_Id,
                     Experiencias = r.Experiencias.Select(e => new
                     {
+                        e.Empresa,
+                        e.PlusCode,
+                        e.Vinculo,
                         e.Funcao,
                         e.Inicio,
                         e.Fim,
@@ -103,10 +108,11 @@ namespace ApiBase.Repositories.Instituicao
                     }),
                     Graduacoes = r.graduacoes.Select(g => new
                     {
+                        g.Situacao,
                         g.Inicio,
                         g.Fim,
                         g.InstituicaoNome,
-                        g.Tipo
+                        g.CursoNome
                     })
                 })
                 .AsSplitQuery()

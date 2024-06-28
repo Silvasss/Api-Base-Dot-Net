@@ -3,6 +3,7 @@ using ApiBase.Data;
 using ApiBase.Dtos;
 using ApiBase.Helpers;
 using ApiBase.Models;
+using ApiBase.Pagination;
 using Bogus;
 using Bogus.Extensions;
 using Google.OpenLocationCode;
@@ -105,9 +106,9 @@ namespace ApiBase.Repositories.Admin
             };
         }
 
-        public async Task<IEnumerable<object>> GetAllInstituicao()
+        public async Task<PagedList<object>> GetAllInstituicao(VisitanteParameters visitanteParams)
         {
-            return await _entityFramework.Instituicao
+            var generico = await _entityFramework.Set<InstituicaoEF>()
                 .AsNoTracking()
                 .Select(x => new
                 {
@@ -118,6 +119,10 @@ namespace ApiBase.Repositories.Admin
                     x.CreatedAt
                 })
                 .ToListAsync();
+
+            var retornoQuery = generico.AsQueryable();
+
+            return PagedList<object>.ToPagedList(retornoQuery, visitanteParams.PageNumber, visitanteParams.PageSize);
         }
 
         public async Task<object> GetInfoInstituicao(int id)
@@ -144,18 +149,18 @@ namespace ApiBase.Repositories.Admin
                 .FirstAsync();
         }
 
-        public async Task<IEnumerable<object>> GetAllLogs()
+        public async Task<PagedList<object>> GetAllLogs(VisitanteParameters visitanteParams)
         {
-            return await _entityFramework.Logs
-                .AsNoTracking()
-                .OrderByDescending(e => e.TimeStamp)
-                .ToListAsync();
+            var generico = await _entityFramework.Set<SerilogEntry>().AsNoTracking().ToListAsync();
+
+            var retornoQuery = generico.OrderByDescending(e => e.TimeStamp).AsQueryable();
+
+            return PagedList<object>.ToPagedList(retornoQuery, visitanteParams.PageNumber, visitanteParams.PageSize);
         }
 
-        public async Task<IEnumerable<object>> GetAllUsuarios(int userId)
+        public async Task<PagedList<object>> GetAllUsuarios(VisitanteParameters visitanteParams, int userId)
         {
-            return await _entityFramework.Usuarios
-                .AsNoTracking()
+            var generico = await _entityFramework.Set<Usuario>().AsNoTracking()
                 .Where(u => u.Usuario_Id != userId)
                 .Select(x => new
                 {
@@ -166,6 +171,10 @@ namespace ApiBase.Repositories.Admin
                     x.Auth_Id
                 })
                 .ToListAsync();
+
+            var retornoQuery = generico.AsQueryable();
+
+            return PagedList<object>.ToPagedList(retornoQuery, visitanteParams.PageNumber, visitanteParams.PageSize);
         }
 
         public async Task<object> GetUsuario(int id)
@@ -184,6 +193,9 @@ namespace ApiBase.Repositories.Admin
                     r.Tipo_Conta_Id,
                     Experiencias = r.Experiencias.Select(e => new
                     {
+                        e.Empresa,
+                        e.PlusCode,
+                        e.Vinculo,
                         e.Funcao,
                         e.Inicio,
                         e.Fim,
@@ -191,10 +203,11 @@ namespace ApiBase.Repositories.Admin
                     }),
                     Graduacoes = r.graduacoes.Select(g => new
                     {
-                        g.Tipo,
+                        g.Situacao,
                         g.Inicio,
                         g.Fim,
-                        g.InstituicaoNome
+                        g.InstituicaoNome,
+                        g.CursoNome
                     })
                 })
                 .AsSplitQuery()
@@ -340,15 +353,9 @@ namespace ApiBase.Repositories.Admin
                 "Serviços de pesquisa e desenvolvimento"
             ];
 
-            List<Auth> response = new();
-
             for (int i = 0; i < quantidade; i++)
             {
-                var (ativo, startDate, endDate, situacaoGraduacao) = GenerateDateRange();
-
-                var (Instituicao_Id, InstituicaoNome, Curso_Id, CursoNome) = await InstituicaoSelecao();
-
-                Auth novoAuth = new Auth()
+                Auth novoAuth = new()
                 {
                     Usuario = fake.Internet.UserName(),
                     PasswordHash = fake.Random.Bytes(10),
@@ -362,59 +369,69 @@ namespace ApiBase.Repositories.Admin
                         CargoPrincipal = fake.Lorem.Sentence(50).ClampLength(10, 50),
                         Email = fake.Internet.Email(),
                         PortfolioURL = fake.Internet.Url(),
-                        Experiencia = fake.Random.ListItem(["Start Up", "6 months", "1 Year", "2 Year", "3 Year", "4 Year", "5 Year"])                        
+                        Experiencia = fake.Random.ListItem(["Start Up", "6 months", "1 Year", "2 Year", "3 Year", "4 Year", "5 Year"])
                     }
                 };
 
-                List<Experiencia> listaExperinecias = new();
+                await _entityFramework.AddAsync(novoAuth);
+
+                await _entityFramework.SaveChangesAsync();
 
                 for (int k = 0; k < fake.Random.Number(1, 10); k++)
                 {
-                    listaExperinecias.Add(
-                        new Experiencia
-                        {
-                            Setor = fake.Random.ListItem(tiposDeServicosSetorTerciario),
-                            Empresa = fake.Company.CompanyName(),
-                            PlusCode = OpenLocationCode.Encode(fake.Address.Latitude(), fake.Address.Longitude()),
-                            Vinculo = fake.Random.ListItem(["CLT", "Estágio", "Empregado Doméstico", "Autônomo", "Pessoa Jurídica (PJ)", "Home Office"]),
-                            Funcao = fake.Name.JobDescriptor(),
-                            Ativo = ativo,
-                            Inicio = startDate,
-                            Fim = ativo ? null : endDate,
-                            Responsabilidade = fake.Lorem.Sentence(150).ClampLength(20, 150)
-                        });
+                    var (ativo, startDate, endDate, situacaoGraduacao) = GenerateDateRange();
+
+                    Experiencia experiencia = new()
+                    {
+                        Usuario_Id = novoAuth.UsuarioPerfil.Usuario_Id,
+                        Setor = fake.Random.ListItem(tiposDeServicosSetorTerciario),
+                        Empresa = fake.Company.CompanyName(),
+                        PlusCode = OpenLocationCode.Encode(fake.Address.Latitude(), fake.Address.Longitude()),
+                        Vinculo = fake.Random.ListItem(["CLT", "Estágio", "Empregado Doméstico", "Autônomo", "Pessoa Jurídica (PJ)", "Home Office"]),
+                        Funcao = fake.Name.JobDescriptor(),
+                        Ativo = ativo,
+                        Inicio = startDate,
+                        Fim = ativo ? null : endDate,
+                        Responsabilidade = fake.Lorem.Sentence(150).ClampLength(20, 150)
+                    };
+
+                    await _entityFramework.AddAsync(experiencia);
+
+                    await _entityFramework.SaveChangesAsync();
                 }
-
-                novoAuth.UsuarioPerfil.Experiencias = listaExperinecias;
-
-                List<Graduacao> listaGraduacao = new();
 
                 for (int k = 0; k < fake.Random.Number(1, 4); k++)
                 {
-                    listaGraduacao.Add(
-                        new Graduacao
-                        {
-                            Situacao = situacaoGraduacao,
-                            Curso_Id = Curso_Id,
-                            CursoNome = CursoNome,
-                            InstituicaoId = Instituicao_Id,
-                            InstituicaoNome = InstituicaoNome,
-                            Tipo = fake.Random.ListItem(["Bacharelado", "Licenciatura", "Tecnólogo"]),
-                            Status = fake.PickRandom<Status>(),
-                            Inicio = startDate,
-                            Fim = situacaoGraduacao == SituacaoGraduacao.Concluído ? endDate : null,
-                        }
-                    );
+                    var (ativo, startDate, endDate, situacaoGraduacao) = GenerateDateRange();
+
+                    var (Instituicao_Id, InstituicaoNome, Curso_Id, CursoNome) = await InstituicaoSelecao();
+
+                    Graduacao graduacao = new()
+                    {
+                        Usuario_Id = novoAuth.UsuarioPerfil.Usuario_Id,
+                        Situacao = situacaoGraduacao,
+                        Curso_Id = Curso_Id,
+                        CursoNome = CursoNome,
+                        InstituicaoId = Instituicao_Id,
+                        InstituicaoNome = InstituicaoNome,
+                        Tipo = fake.Random.ListItem(["Bacharelado", "Licenciatura", "Tecnólogo"]),
+                        Status = fake.PickRandom<Status>(),
+                        Inicio = startDate,
+                        Fim = situacaoGraduacao == SituacaoGraduacao.Concluído ? endDate : null,
+                    };
+
+                    Solicitacao solicitacaoModel = new()
+                    {
+                        Instituicao_Id = graduacao.InstituicaoId
+                    };
+
+                    graduacao.Solicitacao = solicitacaoModel;
+
+                    await _entityFramework.AddAsync(graduacao);
+
+                    await _entityFramework.SaveChangesAsync();
                 }
-
-                novoAuth.UsuarioPerfil.graduacoes = listaGraduacao;
-
-                response.Add(novoAuth);
             }
-
-            await _entityFramework.Auth.AddRangeAsync(response);
-
-            await _entityFramework.SaveChangesAsync();
 
             return true;
         }
